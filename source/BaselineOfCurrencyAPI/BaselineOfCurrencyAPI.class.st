@@ -37,7 +37,7 @@ BaselineOfCurrencyAPI >> setUpDependencies: spec [
 
 	spec
 		baseline: 'Chalten' with: [ spec repository: 'github://ba-st/Chalten:v8' ];
-		project: 'Chalten-Deployment' copyFrom: 'Buoy' with: [ spec loads: 'Chalten-Gregorian-Calendar' ]
+		project: 'Chalten-Deployment' copyFrom: 'Chalten' with: [ spec loads: 'Chalten-Gregorian-Calendar' ]
 ]
 
 { #category : #baselines }
