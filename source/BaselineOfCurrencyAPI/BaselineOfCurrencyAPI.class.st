@@ -54,5 +54,5 @@ BaselineOfCurrencyAPI >> setUpTestPackages: spec [
 	spec
 		package: 'Currency-Model-Tests'
 		with: [ spec requires: #( 'Buoy-SUnit' 'Chalten-Deployment' 'Currency-Model' ) ];
-		group: 'Tests' with: 'Currency-Model-tests'
+		group: 'Tests' with: 'Currency-Model-Tests'
 ]
