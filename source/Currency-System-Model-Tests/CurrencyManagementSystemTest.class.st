@@ -114,6 +114,12 @@ CurrencyManagementSystemTest >> testCurrencies [
 		do: [ :currency | self assert: currency shortName equals: self usd shortName ]
 ]
 
+{ #category : #'tests - querying' }
+CurrencyManagementSystemTest >> testName [
+
+	self assert: self systemUnderTest name equals: 'Currency Management'
+]
+
 { #category : #'tests - retiring' }
 CurrencyManagementSystemTest >> testRetireCurrencyFromCirculation [
 
