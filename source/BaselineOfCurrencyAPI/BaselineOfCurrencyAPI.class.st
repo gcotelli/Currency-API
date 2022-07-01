@@ -37,7 +37,18 @@ BaselineOfCurrencyAPI >> setUpDependencies: spec [
 
 	spec
 		baseline: 'Chalten' with: [ spec repository: 'github://ba-st/Chalten:v8' ];
-		project: 'Chalten-Deployment' copyFrom: 'Chalten' with: [ spec loads: 'Chalten-Gregorian-Calendar' ]
+		project: 'Chalten-Deployment'
+		copyFrom: 'Chalten'
+		with: [ spec loads: 'Chalten-Gregorian-Calendar' ].
+
+	spec
+		baseline: 'Kepler' with: [ spec repository: 'github://ba-st/Kepler:v5' ];
+		project: 'Kepler-Deployment' copyFrom: 'Kepler' with: [ spec loads: 'Core' ];
+		project: 'Kepler-SUnit' copyFrom: 'Kepler' with: [ spec loads: 'Dependent-SUnit-Extensions' ].
+
+	spec
+		baseline: 'Sagan' with: [ spec repository: 'github://ba-st/Sagan:v6' ];
+		project: 'Sagan-Deployment' copyFrom: 'Sagan' with: [ spec loads: 'Core' ]
 ]
 
 { #category : #baselines }
@@ -45,7 +56,12 @@ BaselineOfCurrencyAPI >> setUpDeploymentPackages: spec [
 
 	spec
 		package: 'Currency-Model' with: [ spec requires: 'Buoy-Deployment' ];
-		group: 'Deployment' with: 'Currency-Model'
+		group: 'Deployment' with: 'Currency-Model'.
+
+	spec
+		package: 'Currency-System-Model'
+		with: [ spec requires: #( 'Kepler-Deployment' 'Sagan-Deployment' ) ];
+		group: 'Deployment' with: 'Currency-System-Model'
 ]
 
 { #category : #baselines }
@@ -54,5 +70,10 @@ BaselineOfCurrencyAPI >> setUpTestPackages: spec [
 	spec
 		package: 'Currency-Model-Tests'
 		with: [ spec requires: #( 'Buoy-SUnit' 'Chalten-Deployment' 'Currency-Model' ) ];
-		group: 'Tests' with: 'Currency-Model-Tests'
+		group: 'Tests' with: 'Currency-Model-Tests'.
+
+	spec
+		package: 'Currency-System-Model-Tests'
+		with: [ spec requires: #( 'Currency-System-Model' 'Currency-Model-Tests' 'Kepler-SUnit' ) ];
+		group: 'Tests' with: 'Currency-System-Model-Tests'
 ]

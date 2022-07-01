@@ -7,7 +7,7 @@ Class {
 	#category : #'Currency-Model-Tests'
 }
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithEmptyPluralName [
 
 	self
@@ -23,7 +23,7 @@ CurrencyTest >> testCantCreateCurrencyWithEmptyPluralName [
 		withMessageText: 'A currency can''t have an empty name'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithEmptySingularName [
 
 	self
@@ -39,7 +39,7 @@ CurrencyTest >> testCantCreateCurrencyWithEmptySingularName [
 		withMessageText: 'A currency can''t have an empty name'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithFractionalSubUnitDenominator [
 
 	self
@@ -55,7 +55,7 @@ CurrencyTest >> testCantCreateCurrencyWithFractionalSubUnitDenominator [
 		withMessageText: 'The sub-unit denominator must be a strictly positive integer'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithInvalidISOCode [
 
 	self
@@ -80,7 +80,7 @@ CurrencyTest >> testCantCreateCurrencyWithInvalidISOCode [
 		raise: InstanceCreationFailed withMessageText: 'ISO 4217 code must have exactly three letters'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithInvalidShortName [
 
 	self
@@ -115,7 +115,7 @@ CurrencyTest >> testCantCreateCurrencyWithInvalidShortName [
 		raise: InstanceCreationFailed
 ]
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithNegativeSubUnitDenominator [
 
 	self
@@ -131,7 +131,7 @@ CurrencyTest >> testCantCreateCurrencyWithNegativeSubUnitDenominator [
 		withMessageText: 'The sub-unit denominator must be a strictly positive integer'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - instance creation failed' }
 CurrencyTest >> testCantCreateCurrencyWithZeroSubUnitDenominator [
 
 	self
