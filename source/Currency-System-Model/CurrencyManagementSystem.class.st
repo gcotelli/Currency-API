@@ -2,7 +2,8 @@ Class {
 	#name : #CurrencyManagementSystem,
 	#superclass : #SubsystemImplementation,
 	#instVars : [
-		'currencies'
+		'currencies',
+		'uniqueIdGenerator'
 	],
 	#category : #'Currency-System-Model'
 }
@@ -17,6 +18,18 @@ CurrencyManagementSystem class >> initialize [
 		declaring:
 			#( #currencies #allCurrencies #'withCurrencyMatching:do:else' #storeCurrency: #updateCurrency:with:
 			   #retireFromCirculation: )
+]
+
+{ #category : #'instance creation' }
+CurrencyManagementSystem class >> new [
+
+	^ self using: UUIDGenerator default
+]
+
+{ #category : #'instance creation' }
+CurrencyManagementSystem class >> using: anUniqueIdGenerator [
+
+	^ super new initializeUsing: anUniqueIdGenerator
 ]
 
 { #category : #querying }
@@ -37,10 +50,22 @@ CurrencyManagementSystem >> dependencies [
 	^ #(  )
 ]
 
+{ #category : #querying }
+CurrencyManagementSystem >> identifierOf: aStatusAwareCurrency [
+
+	^ aStatusAwareCurrency uuid
+]
+
 { #category : #installing }
 CurrencyManagementSystem >> implementedInterfaces [
 
 	^ #( CurrencyManagementSystem )
+]
+
+{ #category : #initialization }
+CurrencyManagementSystem >> initializeUsing: anUniqueIdGenerator [
+
+	uniqueIdGenerator := anUniqueIdGenerator
 ]
 
 { #category : #accessing }
@@ -66,7 +91,7 @@ CurrencyManagementSystem >> retireFromCirculation: aStatusAwareCurrency [
 { #category : #management }
 CurrencyManagementSystem >> storeCurrency: aCurrency [
 
-	^ currencies store: ( StatusAwareCurrency basedOn: aCurrency )
+	^ currencies store: ( StatusAwareCurrency basedOn: aCurrency identifiedBy: uniqueIdGenerator next )
 ]
 
 { #category : #management }

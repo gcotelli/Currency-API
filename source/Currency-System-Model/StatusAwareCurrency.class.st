@@ -3,39 +3,40 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'currency',
-		'isCirculating'
+		'isCirculating',
+		'uuid'
 	],
 	#category : #'Currency-System-Model'
 }
 
-{ #category : #'instance creation' }
-StatusAwareCurrency class >> basedOn: aCurrency [
-	
-	^self basedOn: aCurrency circulating: true 
-]
-
 { #category : #'private - instance creation' }
-StatusAwareCurrency class >> basedOn: aCurrency circulating: aStatus [ 
-	
-	^self new initializeBasedOn: aCurrency circulating: aStatus 
+StatusAwareCurrency class >> basedOn: aCurrency circulating: aStatus identifiedBy: anUUID [
+
+	^ self new initializeBasedOn: aCurrency circulating: aStatus identifiedBy: anUUID
 ]
 
 { #category : #'instance creation' }
-StatusAwareCurrency class >> nonCirculatingBasedOn: aCurrency [
-	
-	^self basedOn: aCurrency circulating: false 
+StatusAwareCurrency class >> basedOn: aCurrency identifiedBy: anUUID [
+
+	^ self basedOn: aCurrency circulating: true identifiedBy: anUUID
+]
+
+{ #category : #'instance creation' }
+StatusAwareCurrency class >> nonCirculatingBasedOn: aCurrency identifiedBy: anUUID [
+
+	^ self basedOn: aCurrency circulating: false identifiedBy: anUUID
 ]
 
 { #category : #converting }
 StatusAwareCurrency >> asNonCirculating [
 
-	^ self class nonCirculatingBasedOn: currency
+	^ self class nonCirculatingBasedOn: currency identifiedBy: self uuid
 ]
 
 { #category : #converting }
 StatusAwareCurrency >> basedOn: aCurrency [
 
-	^ self class basedOn: aCurrency circulating: isCirculating
+	^ self class basedOn: aCurrency circulating: isCirculating identifiedBy: uuid
 ]
 
 { #category : #private }
@@ -51,10 +52,11 @@ StatusAwareCurrency >> hasISO4217Code [
 ]
 
 { #category : #initialization }
-StatusAwareCurrency >> initializeBasedOn: aCurrency circulating: aBoolean [
+StatusAwareCurrency >> initializeBasedOn: aCurrency circulating: aBoolean identifiedBy: anUUID [
 
 	currency := aCurrency.
-	isCirculating := aBoolean
+	isCirculating := aBoolean.
+	uuid := anUUID 
 ]
 
 { #category : #testing }
@@ -104,6 +106,12 @@ StatusAwareCurrency >> synchronizeWith: aStatusAwareCurrency [
 
 	isCirculating := aStatusAwareCurrency isCirculating.
 	currency synchronizeWith: aStatusAwareCurrency currency
+]
+
+{ #category : #accessing }
+StatusAwareCurrency >> uuid [
+
+	^ uuid
 ]
 
 { #category : #enumerating }
