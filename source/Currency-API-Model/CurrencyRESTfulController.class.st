@@ -14,6 +14,13 @@ CurrencyRESTfulController class >> workingWith: aCompositeSystem [
 	^ self new initializeWorkingWith: aCompositeSystem
 ]
 
+{ #category : #private }
+CurrencyRESTfulController >> addStateRelatedLinksFor: currency locatedAt: currencyLocation to: builder [
+
+	( self system isCirculating: currency ) then: [ 
+		builder addLink: currencyLocation / 'retire-from-circulation' relatedTo: 'retireFromCirculation' ]
+]
+
 { #category : #'private - encoding' }
 CurrencyRESTfulController >> configure: aNeoJSONWriter toEncodeAsCurrencyWithin: requestContext [
 
@@ -73,23 +80,25 @@ CurrencyRESTfulController >> currenciesBasedOn: httpRequest within: requestConte
 	^ requestHandler from: httpRequest within: requestContext getCollection: [ self system currencies ]
 ]
 
-{ #category : #API }
+{ #category : #private }
 CurrencyRESTfulController >> currencyBasedOn: json defaultingTo: currency [
 
 	json at: #shortName ifAbsent: [ json shortName: currency shortName ].
 	json at: #singularName ifAbsent: [ json singularName: currency singularName ].
 	json at: #pluralName ifAbsent: [ json pluralName: currency pluralName ].
 	json at: #issueDate ifAbsent: [ json issueDate: currency issueDate yyyymmdd ].
-	json at: #ISO4217Code ifAbsent: [ currency withISO4217CodeDo: [ :code | json ISO4217Code: code ] ]
+	json at: #ISO4217Code ifAbsent: [ currency withISO4217CodeDo: [ :code | json ISO4217Code: code ] ].
+
+	^ Currency basedOn: json
 ]
 
-{ #category : #private }
+{ #category : #API }
 CurrencyRESTfulController >> currencyBasedOn: httpRequest within: requestContext [
 
 	^ requestHandler
 		  from: httpRequest
 		  within: requestContext
-		  get: [ :identifier | self system currencyIdentifiedBy: identifier ]
+		  get: [ :id | self system currencyIdentifiedBy: id ]
 ]
 
 { #category : #'accessing - media types' }
@@ -98,21 +107,16 @@ CurrencyRESTfulController >> currencyVersion1dot0dot0MediaType [
 	^ self jsonMediaType: 'currency' vendoredBy: 'gcotelli' version: '1.0.0'
 ]
 
-{ #category : #querying }
-CurrencyRESTfulController >> identifierOf: aCurrency [
-
-	^ self system identifierOf: aCurrency
-]
-
 { #category : #initialization }
 CurrencyRESTfulController >> initializeCurrenciesRequestHandler [
 
 	requestHandler := RESTfulRequestHandlerBuilder new
 		                  handling: 'currencies'
 		                  locatingResourcesWith: [ :currency :requestContext | 
-			                  self identifierOf: currency ]
+			                  self system identifierOf: currency ]
 		                  extractingIdentifierWith: [ :httpRequest | self identifierIn: httpRequest ];
-		                  beHypermediaDrivenBy: [ :builder :currency :requestContext :currencyLocation |  ];
+		                  beHypermediaDrivenBy: [ :builder :currency :requestContext :currencyLocation | 
+			                  self addStateRelatedLinksFor: currency locatedAt: currencyLocation to: builder ];
 		                  decodeToNeoJSONObjectWhenAccepting: self currencyVersion1dot0dot0MediaType;
 		                  whenResponding: self currencyVersion1dot0dot0MediaType
 		                  encodeToJsonApplying: [ :currency :requestContext :writer | 
@@ -152,6 +156,16 @@ CurrencyRESTfulController >> requestHandler [
 	^ requestHandler
 ]
 
+{ #category : #API }
+CurrencyRESTfulController >> retireFromCirculationBasedOn: httpRequest within: requestContext [
+
+	^ requestHandler
+		  from: httpRequest
+		  within: requestContext
+		  get: [ :id | self system currencyIdentifiedBy: id ]
+		  thenDo: [ :currency | self system retireFromCirculation: currency ]
+]
+
 { #category : #private }
 CurrencyRESTfulController >> system [
 
@@ -172,7 +186,7 @@ CurrencyRESTfulController >> updateCurrencyBasedOn: httpRequest with: requestCon
 		  within: requestContext
 		  get: [ :id | self system currencyIdentifiedBy: id ]
 		  thenUpdateWith: [ :currency :json | 
-			  self currencyBasedOn: json defaultingTo: currency.
-			  self system updateCurrency: currency with: ( Currency basedOn: json )
-			  ]
+			  self system
+				  updateCurrency: currency
+				  with: ( self currencyBasedOn: json defaultingTo: currency ) ]
 ]

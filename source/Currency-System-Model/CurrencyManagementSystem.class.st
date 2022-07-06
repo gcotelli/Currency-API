@@ -79,6 +79,12 @@ CurrencyManagementSystem >> initializeUsing: anUniqueIdGenerator [
 	uniqueIdGenerator := anUniqueIdGenerator
 ]
 
+{ #category : #testing }
+CurrencyManagementSystem >> isCirculating: aStatusAwareCurrency [
+
+	^ aStatusAwareCurrency isCirculating
+]
+
 { #category : #accessing }
 CurrencyManagementSystem >> name [
 

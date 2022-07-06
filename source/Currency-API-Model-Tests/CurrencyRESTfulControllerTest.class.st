@@ -22,10 +22,46 @@ CurrencyRESTfulControllerTest >> assertETag: anEntityTag valueEquals: anETagValu
 	self assert: anEntityTag value equals: anETagValue
 ]
 
-{ #category : #asserting }
+{ #category : #'private - asserting' }
+CurrencyRESTfulControllerTest >> assertMatchesJapaneseYenData: json [
+
+	^ self
+		  assert: json shortName equals: 'JPY';
+		  assert: json singularName equals: 'Japanese Yen';
+		  assert: json pluralName equals: 'Japanese Yen';
+		  assert: json subUnitDenominator equals: 1;
+		  assert: json ISO4217Code equals: 'JPY';
+		  assert: json issueDate equals: '1871-06-27';
+		  assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
+]
+
+{ #category : #'private - asserting' }
 CurrencyRESTfulControllerTest >> assertMediaType: aStringOrMediaType equals: anotherStringOrMediaType [
 
 	self assert: aStringOrMediaType asMediaType equals: anotherStringOrMediaType asMediaType
+]
+
+{ #category : #'private - asserting' }
+CurrencyRESTfulControllerTest >> assertThereIsAtLeastOneCirculatingCurrency [
+
+	self assert: self systemUnderTest currencies notEmpty
+]
+
+{ #category : #'private - asserting' }
+CurrencyRESTfulControllerTest >> assertThereIsNoCirculatingCurrencies [
+
+	| response |
+
+	self assert: self systemUnderTest currencies isEmpty.
+
+	response := resourceController
+		            currenciesBasedOn:
+		            ( self requestToGET: self resourceUrl accepting: self currencyVersion1MediaType )
+		            within: self newHttpRequestContext.
+
+	self
+		assert: response isSuccess;
+		withJsonFromItemsIn: response do: [ :items | self assert: items isEmpty ]
 ]
 
 { #category : #'private - support' }
@@ -92,9 +128,51 @@ CurrencyRESTfulControllerTest >> requestToPOST: body as: contentType accepting: 
 ]
 
 { #category : #'private - support' }
+CurrencyRESTfulControllerTest >> requestToPUTAt: url identifiedBy: anIdentifier [
+
+	^ TeaRequest
+		  fromZnRequest: ( ZnRequest put: url )
+		  pathParams: ( self parametersWith: anIdentifier )
+]
+
+{ #category : #'private - support' }
+CurrencyRESTfulControllerTest >> retireFromCirculationCurrencyIn: createYenResponse [
+
+	| getYenResponse |
+
+	self withJsonFromContentsIn: createYenResponse do: [ :json | 
+		resourceController
+			retireFromCirculationBasedOn:
+			( self requestToPUTAt: json links retireFromCirculation identifiedBy: self firstUUID )
+			within: self newHttpRequestContext
+		].
+	getYenResponse := resourceController
+		                  currencyBasedOn:
+		                  ( self
+			                    requestToGETResourceIdentifiedBy: self firstUUID
+			                    accepting: self currencyVersion1MediaType )
+		                  within: self newHttpRequestContext.
+	self withJsonFromContentsIn: getYenResponse do: [ :json | 
+		self
+			assertMatchesJapaneseYenData: json;
+			assert: json links retireFromCirculation isNil
+		].
+	self assert: self systemUnderTest allCurrencies notEmpty.
+	self assertThereIsNoCirculatingCurrencies
+]
+
+{ #category : #'private - support' }
 CurrencyRESTfulControllerTest >> secondUUID [
 
 	^ self asUUID: '00000000-0000-0000-0000-000000000001'
+]
+
+{ #category : #running }
+CurrencyRESTfulControllerTest >> sequentialIdentifiers [
+
+	^ ( ( 0 to: 5 ) collect: [ :index | 
+		    UUID fromString: ( '00000000-0000-0000-0000-00000000000<1p>' expandMacrosWith: index ) ] )
+		  
 ]
 
 { #category : #running }
@@ -113,15 +191,16 @@ CurrencyRESTfulControllerTest >> setUpResourceController [
 { #category : #running }
 CurrencyRESTfulControllerTest >> setUpUserStoryTest [
 
-	| fixedUUIDGenerator |
-
-	fixedUUIDGenerator := ( ( 0 to: 5 ) collect: [ :index | 
-		                        UUID fromString:
-			                        ( '00000000-0000-0000-0000-00000000000<1p>' expandMacrosWith: index ) ] )
-		                      readStream.
 	userStory := PluggableUserStoryTest requiring: [ :test | 
-		             test registerSubsystem: ( CurrencyManagementSystem using: fixedUUIDGenerator ) ].
+		             test registerSubsystem:
+			             ( CurrencyManagementSystem using: self sequentialIdentifiers readStream ) ].
 	userStory setUp
+]
+
+{ #category : #'private - support' }
+CurrencyRESTfulControllerTest >> systemUnderTest [
+
+	^ userStory rootSystem >> #CurrencyManagementSystem
 ]
 
 { #category : #'tests - creating' }
@@ -322,7 +401,7 @@ CurrencyRESTfulControllerTest >> testCantStoreCurrencyWithTheSameShortName [
 		raise: HTTPClientError conflict
 		withMessageText: 'Something is in conflict with JPY - Japanese Yen'.
 
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies size equals: 1
+	self assert: self systemUnderTest currencies size equals: 1
 ]
 
 { #category : #'tests - creating' }
@@ -337,7 +416,7 @@ CurrencyRESTfulControllerTest >> testCantStoreTheSameCurrencyTwice [
 		raise: HTTPClientError conflict
 		withMessageText: 'Something is in conflict with JPY - Japanese Yen'.
 
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies size equals: 1
+	self assert: self systemUnderTest currencies size equals: 1
 ]
 
 { #category : #'tests - updating' }
@@ -508,7 +587,7 @@ CurrencyRESTfulControllerTest >> testCreateAbkhazianApsar [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: '2f7439dd82ca7d2aaff48edd8ed9ff2c346f50fa';
+		assertETag: response entityTag valueEquals: 'd4700c5df1abfab896408256a8bf12dd20d0c927';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'APSAR';
@@ -519,8 +598,7 @@ CurrencyRESTfulControllerTest >> testCreateAbkhazianApsar [
 				assert: json issueDate equals: '2008-09-26';
 				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
 			].
-
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies notEmpty
+	self assertThereIsAtLeastOneCirculatingCurrency
 ]
 
 { #category : #'tests - creating' }
@@ -543,7 +621,7 @@ CurrencyRESTfulControllerTest >> testCreateCurrenciesWithTheSameName [
 			]
 		raise: HTTPClientError conflict.
 
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies size equals: 2
+	self assert: self systemUnderTest currencies size equals: 2
 ]
 
 { #category : #'tests - creating' }
@@ -552,7 +630,7 @@ CurrencyRESTfulControllerTest >> testCreateSeveralCurrencies [
 	self testCreateUSD.
 	self createJapaneseYen.
 
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies size equals: 2
+	self assert: self systemUnderTest currencies size equals: 2
 ]
 
 { #category : #'tests - creating' }
@@ -579,7 +657,7 @@ CurrencyRESTfulControllerTest >> testCreateUSD [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: 'ae7eb486885d4e56bad695c0973d4e287fc08049';
+		assertETag: response entityTag valueEquals: '0d02e4556127761030a96bf10fe8028291af8b1e';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'USD';
@@ -588,10 +666,11 @@ CurrencyRESTfulControllerTest >> testCreateUSD [
 				assert: json subUnitDenominator equals: 100;
 				assert: json ISO4217Code equals: 'USD';
 				assert: json issueDate equals: '1792-04-02';
-				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
+				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000';
+				assertUrl: json links retireFromCirculation
+				equals: self resourceUrl / '00000000-0000-0000-0000-000000000000' / 'retire-from-circulation'
 			].
-
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies notEmpty
+	self assertThereIsAtLeastOneCirculatingCurrency
 ]
 
 { #category : #'tests - creating' }
@@ -617,7 +696,7 @@ CurrencyRESTfulControllerTest >> testCreateUSDAcceptingMediumOfExchange [
 		equals: resourceController mediumOfExchangeVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: '16cdba4bdac5e9ade7e2f871c51a16ded1752cbb';
+		assertETag: response entityTag valueEquals: 'bcfd990afac64fc816888ef43565be5555ff3751';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'USD';
@@ -627,8 +706,7 @@ CurrencyRESTfulControllerTest >> testCreateUSDAcceptingMediumOfExchange [
 				assert: json issueDate isNil;
 				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
 			].
-
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies notEmpty
+	self assertThereIsAtLeastOneCirculatingCurrency
 ]
 
 { #category : #'tests - creating' }
@@ -654,7 +732,7 @@ CurrencyRESTfulControllerTest >> testCreateUSDAcceptingUnifOfAccount [
 		equals: resourceController unitOfAccountVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: '50ee7153ccd0a0ab29ec63063ba181ba7f483c7f';
+		assertETag: response entityTag valueEquals: '7d703fb32e9a7826b5c94aa626d1262301d6e1a7';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'USD';
@@ -664,8 +742,7 @@ CurrencyRESTfulControllerTest >> testCreateUSDAcceptingUnifOfAccount [
 				assert: json issueDate isNil;
 				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
 			].
-
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies notEmpty
+	self assertThereIsAtLeastOneCirculatingCurrency
 ]
 
 { #category : #'tests - creating' }
@@ -680,19 +757,10 @@ CurrencyRESTfulControllerTest >> testCreateYen [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: 'b2d5362b2470a42dff4488028a35d36df95a9357';
-		withJsonFromContentsIn: response do: [ :json | 
-			self
-				assert: json shortName equals: 'JPY';
-				assert: json singularName equals: 'Japanese Yen';
-				assert: json pluralName equals: 'Japanese Yen';
-				assert: json subUnitDenominator equals: 1;
-				assert: json ISO4217Code equals: 'JPY';
-				assert: json issueDate equals: '1871-06-27';
-				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
-			].
+		assertETag: response entityTag valueEquals: 'c6c9144cfafd590c1c7ef0a14d885b88cc6fba48';
+		withJsonFromContentsIn: response do: [ :json | self assertMatchesJapaneseYenData: json ].
 
-	self assert: ( userStory rootSystem >> #CurrencyManagementSystem ) currencies notEmpty
+	self assertThereIsAtLeastOneCirculatingCurrency
 ]
 
 { #category : #'tests - querying' }
@@ -723,12 +791,16 @@ CurrencyRESTfulControllerTest >> testCurrencies [
 			self
 				assert: yen shortName equals: 'JPY';
 				assertUrl: yen selfLocation
-				equals: 'http://api.example.com/currencies/00000000-0000-0000-0000-000000000001'.
+				equals: 'http://api.example.com/currencies/00000000-0000-0000-0000-000000000001';
+				assertUrl: yen links retireFromCirculation
+				equals: self resourceUrl / '00000000-0000-0000-0000-000000000001' / 'retire-from-circulation'.
 			usd := items second.
 			self
 				assert: usd shortName equals: 'USD';
 				assertUrl: usd selfLocation
-				equals: 'http://api.example.com/currencies/00000000-0000-0000-0000-000000000000'
+				equals: 'http://api.example.com/currencies/00000000-0000-0000-0000-000000000000';
+				assertUrl: usd links retireFromCirculation
+				equals: self resourceUrl / '00000000-0000-0000-0000-000000000000' / 'retire-from-circulation'
 			]
 ]
 
@@ -838,6 +910,29 @@ CurrencyRESTfulControllerTest >> testCurrencyIdentifiedByWhenNotModifiedButAskin
 			]
 ]
 
+{ #category : #'tests - retiring' }
+CurrencyRESTfulControllerTest >> testRetireYenFromCirculation [
+
+	| createYenResponse |
+
+	createYenResponse := self createJapaneseYen.
+	
+	self assertThereIsAtLeastOneCirculatingCurrency.
+	
+	self retireFromCirculationCurrencyIn: createYenResponse
+]
+
+{ #category : #'tests - retiring' }
+CurrencyRESTfulControllerTest >> testRetireYenFromCirculationTwiceHasNoEffect [
+
+	| createYenResponse |
+
+	createYenResponse := self createJapaneseYen.
+	self
+		retireFromCirculationCurrencyIn: createYenResponse;
+		retireFromCirculationCurrencyIn: createYenResponse
+]
+
 { #category : #'tests - updating' }
 CurrencyRESTfulControllerTest >> testUpdateYenISO4217Code [
 
@@ -859,7 +954,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenISO4217Code [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: '1e9f6f944363127a87d90b43b44e4bef14b933ed';
+		assertETag: response entityTag valueEquals: '5e5589132e77f7fc0b288a850410fc668972ccad';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'JPY';
@@ -893,7 +988,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenIssueDate [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: 'de6c7216eda71915e91361ad977a43351e6bed27';
+		assertETag: response entityTag valueEquals: '0dd7ce12ffea3d0c49bc2bebdc78f7506bd1122d';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'JPY';
@@ -927,7 +1022,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenNames [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: '376656279cc77f7944663b86938b4554a18f530f';
+		assertETag: response entityTag valueEquals: '5729ccc94dd809fb70d99d263de6bbc8c2d45422';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'JPY';
@@ -961,7 +1056,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenShortName [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: 'd5e3ed312e786ba9227847982d61396a92407ae3';
+		assertETag: response entityTag valueEquals: '06ef85b3c987007b5f9eb7cf638d6eae6c82b15d';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'YEN';
@@ -970,7 +1065,9 @@ CurrencyRESTfulControllerTest >> testUpdateYenShortName [
 				assert: json subUnitDenominator equals: 1;
 				assert: json ISO4217Code equals: 'JPY';
 				assert: json issueDate equals: '1871-06-27';
-				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000'
+				assertUrl: json selfLocation equals: self resourceUrl / '00000000-0000-0000-0000-000000000000';
+				assertUrl: json links retireFromCirculation
+				equals: self resourceUrl / '00000000-0000-0000-0000-000000000000' / 'retire-from-circulation'
 			]
 ]
 
@@ -995,7 +1092,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenSubUnitDenominator [
 		equals: resourceController currencyVersion1dot0dot0MediaType;
 		assert: response varyHeaderNames includes: 'Accept';
 		assert: response cachingDirectives includes: 'Max-Age=86400';
-		assertETag: response entityTag valueEquals: '209a6ddfe06d8741d28c2edd7d947f0d4193aef2';
+		assertETag: response entityTag valueEquals: '6250ed72fd3e39bede3dc16262a227d2d9deeb6a';
 		withJsonFromContentsIn: response do: [ :json | 
 			self
 				assert: json shortName equals: 'JPY';
