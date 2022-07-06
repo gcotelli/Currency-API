@@ -16,7 +16,7 @@ CurrencyManagementSystem class >> initialize [
 		named: 'Currency Management'
 		declaring:
 			#( #currencies #allCurrencies #'withCurrencyMatching:do:else' #storeCurrency: #updateCurrency:with:
-			   #retireCurrencyFromCirculation: )
+			   #retireFromCirculation: )
 ]
 
 { #category : #querying }
@@ -58,7 +58,7 @@ CurrencyManagementSystem >> resolveDependencies [
 ]
 
 { #category : #management }
-CurrencyManagementSystem >> retireCurrencyFromCirculation: aStatusAwareCurrency [
+CurrencyManagementSystem >> retireFromCirculation: aStatusAwareCurrency [
 
 	currencies update: aStatusAwareCurrency with: aStatusAwareCurrency asNonCirculating
 ]

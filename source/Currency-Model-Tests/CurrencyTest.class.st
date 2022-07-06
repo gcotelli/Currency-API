@@ -179,7 +179,7 @@ CurrencyTest >> testCreatingAbkhazianApsar [
 CurrencyTest >> testCreatingJapaneseYen [
 
 	"The Japanese Yen has a few singularities:
-	- The language of this currency do not have a morphological plural distinction.
+	- The language of this currency does not have a morphological plural distinction.
 	- Do not have minor units, like cents in other currencies.	"
 
 	| currency |

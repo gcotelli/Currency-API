@@ -132,7 +132,7 @@ CurrencyManagementSystemTest >> testRetireCurrencyFromCirculation [
 	self withTheOnlyOneIn: self systemUnderTest currencies do: [ :currency | 
 		self assert: currency shortName equals: austral shortName.
 
-		self systemUnderTest retireCurrencyFromCirculation: currency
+		self systemUnderTest retireFromCirculation: currency
 		].
 
 	self assert: self systemUnderTest currencies isEmpty.
