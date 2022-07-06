@@ -44,6 +44,17 @@ CurrencyManagementSystem >> currencies [
 	^ currencies findAllMatching: [ :currency | currency isCirculating ] sortedBy: #shortName ascending
 ]
 
+{ #category : #querying }
+CurrencyManagementSystem >> currencyIdentifiedBy: anIdentifier [
+
+	^ self
+		  withCurrencyMatching: [ :currency :criteria | currency uuid = anIdentifier ]
+		  do: #yourself
+		  else: [ 
+			  ObjectNotFound signal:
+				  ( 'There''s no currency identified by <1p>' expandMacrosWith: anIdentifier ) ]
+]
+
 { #category : #installing }
 CurrencyManagementSystem >> dependencies [
 

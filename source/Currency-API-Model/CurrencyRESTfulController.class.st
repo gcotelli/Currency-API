@@ -73,6 +73,25 @@ CurrencyRESTfulController >> currenciesBasedOn: httpRequest within: requestConte
 	^ requestHandler from: httpRequest within: requestContext getCollection: [ self system currencies ]
 ]
 
+{ #category : #API }
+CurrencyRESTfulController >> currencyBasedOn: json defaultingTo: currency [
+
+	json at: #shortName ifAbsent: [ json shortName: currency shortName ].
+	json at: #singularName ifAbsent: [ json singularName: currency singularName ].
+	json at: #pluralName ifAbsent: [ json pluralName: currency pluralName ].
+	json at: #issueDate ifAbsent: [ json issueDate: currency issueDate yyyymmdd ].
+	json at: #ISO4217Code ifAbsent: [ currency withISO4217CodeDo: [ :code | json ISO4217Code: code ] ]
+]
+
+{ #category : #private }
+CurrencyRESTfulController >> currencyBasedOn: httpRequest within: requestContext [
+
+	^ requestHandler
+		  from: httpRequest
+		  within: requestContext
+		  get: [ :identifier | self system currencyIdentifiedBy: identifier ]
+]
+
 { #category : #'accessing - media types' }
 CurrencyRESTfulController >> currencyVersion1dot0dot0MediaType [
 
@@ -143,4 +162,17 @@ CurrencyRESTfulController >> system [
 CurrencyRESTfulController >> unitOfAccountVersion1dot0dot0MediaType [
 
 	^ self jsonMediaType: 'unit-of-account' vendoredBy: 'gcotelli' version: '1.0.0'
+]
+
+{ #category : #API }
+CurrencyRESTfulController >> updateCurrencyBasedOn: httpRequest with: requestContext [
+
+	^ requestHandler
+		  from: httpRequest
+		  within: requestContext
+		  get: [ :id | self system currencyIdentifiedBy: id ]
+		  thenUpdateWith: [ :currency :json | 
+			  self currencyBasedOn: json defaultingTo: currency.
+			  self system updateCurrency: currency with: ( Currency basedOn: json )
+			  ]
 ]
