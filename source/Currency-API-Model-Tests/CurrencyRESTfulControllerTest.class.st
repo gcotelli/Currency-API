@@ -434,7 +434,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateCurrencyWhenETagDoesntMatch [
 						  with: '{"shortName":"YEN"}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType
 						  conditionalTo: '"XXX"' asEntityTag )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError preconditionFailed
 ]
@@ -453,7 +453,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateCurrencyWhenETagIsMissing [
 						  requestToPATCHResourceIdentifiedBy: self firstUUID
 						  with: '{"shortName":"YEN"}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError preconditionRequired
 		withMessageText: 'Missing If-Match header.'
@@ -475,7 +475,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateShortNameInConflictingWays [
 						  with: '{"shortName":"USD"}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType
 						  conditionalTo: createRequest entityTag )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError conflict
 		withMessageText: 'Something is in conflict with USD - Japanese Yen'
@@ -496,7 +496,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateWithInvalidDate [
 						  with: '{"issueDate":"2020-XX-74"}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType
 						  conditionalTo: createRequest entityTag )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError unprocessableEntity
 		withMessageText: ' Expect a two digit month, got XX'
@@ -517,7 +517,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateWithSeveralProblems [
 						  with: '{"ISO4217Code":"","subUnitDenominator":0}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType
 						  conditionalTo: createRequest entityTag )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError unprocessableEntity
 		withMessageText: 'The sub-unit denominator must be a strictly positive integer. ISO 4217 code must have exactly three letters'
@@ -538,7 +538,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateYenNames [
 						  with: '{"singularName":"","pluralName":""}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType
 						  conditionalTo: createRequest entityTag )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError unprocessableEntity
 		withMessageText: 'A currency can''t have an empty name. A currency can''t have an empty name'
@@ -559,7 +559,7 @@ CurrencyRESTfulControllerTest >> testCantUpdateYenShortName [
 						  with: '{"shortName":""}'
 						  accepting: resourceController currencyVersion1dot0dot0MediaType
 						  conditionalTo: createRequest entityTag )
-				with: self newHttpRequestContext
+				within: self newHttpRequestContext
 			]
 		raise: HTTPClientError unprocessableEntity
 		withMessageText: 'A currency short name must have between 3 and 6 letters'
@@ -946,7 +946,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenISO4217Code [
 				              with: '{"ISO4217Code":"YEN"}'
 				              accepting: resourceController currencyVersion1dot0dot0MediaType
 				              conditionalTo: createRequest entityTag )
-		            with: self newHttpRequestContext.
+		            within: self newHttpRequestContext.
 
 	self
 		assert: response isSuccess;
@@ -980,7 +980,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenIssueDate [
 				              with: '{"issueDate":"2022-04-01"}'
 				              accepting: resourceController currencyVersion1dot0dot0MediaType
 				              conditionalTo: createRequest entityTag )
-		            with: self newHttpRequestContext.
+		            within: self newHttpRequestContext.
 
 	self
 		assert: response isSuccess;
@@ -1014,7 +1014,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenNames [
 				              with: '{"singularName":"Yen","pluralName":"Yenes"}'
 				              accepting: resourceController currencyVersion1dot0dot0MediaType
 				              conditionalTo: createRequest entityTag )
-		            with: self newHttpRequestContext.
+		            within: self newHttpRequestContext.
 
 	self
 		assert: response isSuccess;
@@ -1048,7 +1048,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenShortName [
 				              with: '{"shortName":"YEN"}'
 				              accepting: resourceController currencyVersion1dot0dot0MediaType
 				              conditionalTo: createRequest entityTag )
-		            with: self newHttpRequestContext.
+		            within: self newHttpRequestContext.
 
 	self
 		assert: response isSuccess;
@@ -1084,7 +1084,7 @@ CurrencyRESTfulControllerTest >> testUpdateYenSubUnitDenominator [
 				              with: '{"subUnitDenominator":10}'
 				              accepting: resourceController currencyVersion1dot0dot0MediaType
 				              conditionalTo: createRequest entityTag )
-		            with: self newHttpRequestContext.
+		            within: self newHttpRequestContext.
 
 	self
 		assert: response isSuccess;
