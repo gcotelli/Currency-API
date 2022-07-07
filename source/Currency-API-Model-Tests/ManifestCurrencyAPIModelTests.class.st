@@ -7,6 +7,12 @@ Class {
 	#category : #'Currency-API-Model-Tests'
 }
 
+{ #category : #coverage }
+ManifestCurrencyAPIModelTests class >> classNamesNotUnderTest [
+
+	^ #( ManifestCurrencyAPIModelTests )
+]
+
 { #category : #'code-critics' }
 ManifestCurrencyAPIModelTests class >> ruleSentNotImplementedRuleV1FalsePositive [
 	^ #(#(#(#RGPackageDefinition #(#'Currency-API-Model-Tests')) #'2022-07-07T09:10:28.770434-03:00') )
