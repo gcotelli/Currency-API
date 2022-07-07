@@ -107,6 +107,56 @@ CurrencyRESTfulController >> currencyVersion1dot0dot0MediaType [
 	^ self jsonMediaType: 'currency' vendoredBy: 'gcotelli' version: '1.0.0'
 ]
 
+{ #category : #routes }
+CurrencyRESTfulController >> declareCreateCurrencyRoute [
+
+	^ RouteSpecification
+		  handling: #POST
+		  at: self endpoint
+		  evaluating: [ :httpRequest :requestContext | 
+		  self createCurrencyBasedOn: httpRequest within: requestContext ]
+]
+
+{ #category : #routes }
+CurrencyRESTfulController >> declareGetCurrenciesRoute [
+
+	^ RouteSpecification
+		  handling: #GET
+		  at: self endpoint
+		  evaluating: [ :httpRequest :requestContext | 
+		  self currenciesBasedOn: httpRequest within: requestContext ]
+]
+
+{ #category : #routes }
+CurrencyRESTfulController >> declareGetCurrencyRoute [
+
+	^ RouteSpecification
+		  handling: #GET
+		  at: self identifierTemplate
+		  evaluating: [ :httpRequest :requestContext | 
+		  self currencyBasedOn: httpRequest within: requestContext ]
+]
+
+{ #category : #routes }
+CurrencyRESTfulController >> declareRetireFromCirculationCurrencyRoute [
+
+	^ RouteSpecification
+		  handling: #PUT
+		  at: ( '<1s>/<2s>' expandMacrosWith: self identifierTemplate with: 'retire-from-circulation' )
+		  evaluating: [ :httpRequest :requestContext | 
+			  self retireFromCirculationBasedOn: httpRequest within: requestContext ]
+]
+
+{ #category : #routes }
+CurrencyRESTfulController >> declareUpdateCurrencyRoute [
+
+	^ RouteSpecification
+		  handling: #PATCH
+		  at: self identifierTemplate
+		  evaluating: [ :httpRequest :requestContext | 
+		  self updateCurrencyBasedOn: httpRequest within: requestContext ] 
+]
+
 { #category : #initialization }
 CurrencyRESTfulController >> initializeCurrenciesRequestHandler [
 
@@ -172,6 +222,12 @@ CurrencyRESTfulController >> system [
 	^ rootSystem >> #CurrencyManagementSystem
 ]
 
+{ #category : #private }
+CurrencyRESTfulController >> typeIdConstraint [
+
+	^ IsUUID
+]
+
 { #category : #'accessing - media types' }
 CurrencyRESTfulController >> unitOfAccountVersion1dot0dot0MediaType [
 
@@ -179,7 +235,7 @@ CurrencyRESTfulController >> unitOfAccountVersion1dot0dot0MediaType [
 ]
 
 { #category : #API }
-CurrencyRESTfulController >> updateCurrencyBasedOn: httpRequest with: requestContext [
+CurrencyRESTfulController >> updateCurrencyBasedOn: httpRequest within: requestContext [
 
 	^ requestHandler
 		  from: httpRequest
