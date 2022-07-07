@@ -2,7 +2,8 @@ Class {
 	#name : #CurrencyManagementSystem,
 	#superclass : #SubsystemImplementation,
 	#instVars : [
-		'currencies'
+		'currencies',
+		'uniqueIdGenerator'
 	],
 	#category : #'Currency-System-Model'
 }
@@ -19,6 +20,18 @@ CurrencyManagementSystem class >> initialize [
 			   #retireFromCirculation: )
 ]
 
+{ #category : #'instance creation' }
+CurrencyManagementSystem class >> new [
+
+	^ self using: UUIDGenerator default
+]
+
+{ #category : #'instance creation' }
+CurrencyManagementSystem class >> using: anUniqueIdGenerator [
+
+	^ super new initializeUsing: anUniqueIdGenerator
+]
+
 { #category : #querying }
 CurrencyManagementSystem >> allCurrencies [
 
@@ -31,16 +44,45 @@ CurrencyManagementSystem >> currencies [
 	^ currencies findAllMatching: [ :currency | currency isCirculating ] sortedBy: #shortName ascending
 ]
 
+{ #category : #querying }
+CurrencyManagementSystem >> currencyIdentifiedBy: anIdentifier [
+
+	^ self
+		  withCurrencyMatching: [ :currency :criteria | currency uuid = anIdentifier ]
+		  do: #yourself
+		  else: [ 
+			  ObjectNotFound signal:
+				  ( 'There''s no currency identified by <1p>' expandMacrosWith: anIdentifier ) ]
+]
+
 { #category : #installing }
 CurrencyManagementSystem >> dependencies [
 
 	^ #(  )
 ]
 
+{ #category : #querying }
+CurrencyManagementSystem >> identifierOf: aStatusAwareCurrency [
+
+	^ aStatusAwareCurrency uuid
+]
+
 { #category : #installing }
 CurrencyManagementSystem >> implementedInterfaces [
 
 	^ #( CurrencyManagementSystem )
+]
+
+{ #category : #initialization }
+CurrencyManagementSystem >> initializeUsing: anUniqueIdGenerator [
+
+	uniqueIdGenerator := anUniqueIdGenerator
+]
+
+{ #category : #testing }
+CurrencyManagementSystem >> isCirculating: aStatusAwareCurrency [
+
+	^ aStatusAwareCurrency isCirculating
 ]
 
 { #category : #accessing }
@@ -66,7 +108,7 @@ CurrencyManagementSystem >> retireFromCirculation: aStatusAwareCurrency [
 { #category : #management }
 CurrencyManagementSystem >> storeCurrency: aCurrency [
 
-	^ currencies store: ( StatusAwareCurrency basedOn: aCurrency )
+	^ currencies store: ( StatusAwareCurrency basedOn: aCurrency identifiedBy: uniqueIdGenerator next )
 ]
 
 { #category : #management }

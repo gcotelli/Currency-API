@@ -15,7 +15,7 @@ BaselineOfCurrencyAPI >> baseline: spec [
 			setUpTestPackages: spec.
 		spec
 			group: 'CI' with: 'Tests';
-			group: 'Tools' with: 'Buoy-Tools';
+			group: 'Tools' with: #( 'Buoy-Tools' 'Stargate-Tools' );
 			group: 'Development' with: #( 'Tests' 'Tools' )
 		]
 ]
@@ -48,7 +48,13 @@ BaselineOfCurrencyAPI >> setUpDependencies: spec [
 
 	spec
 		baseline: 'Sagan' with: [ spec repository: 'github://ba-st/Sagan:v6' ];
-		project: 'Sagan-Deployment' copyFrom: 'Sagan' with: [ spec loads: 'Core' ]
+		project: 'Sagan-Deployment' copyFrom: 'Sagan' with: [ spec loads: 'Core' ].
+
+	spec
+		baseline: 'Stargate' with: [ spec repository: 'github://ba-st/Stargate:v8' ];
+		project: 'Stargate-Deployment' copyFrom: 'Stargate' with: [ spec loads: 'Deployment' ];
+		project: 'Stargate-SUnit' copyFrom: 'Stargate' with: [ spec loads: 'Dependent-SUnit-Extensions' ];
+		project: 'Stargate-Tools' copyFrom: 'Stargate' with: [ spec loads: 'Tools' ]
 ]
 
 { #category : #baselines }
@@ -61,7 +67,12 @@ BaselineOfCurrencyAPI >> setUpDeploymentPackages: spec [
 	spec
 		package: 'Currency-System-Model'
 		with: [ spec requires: #( 'Kepler-Deployment' 'Sagan-Deployment' ) ];
-		group: 'Deployment' with: 'Currency-System-Model'
+		group: 'Deployment' with: 'Currency-System-Model'.
+
+	spec
+		package: 'Currency-API-Model'
+		with: [ spec requires: #( 'Stargate-Deployment' 'Currency-System-Model' ) ];
+		group: 'Deployment' with: 'Currency-API-Model'
 ]
 
 { #category : #baselines }
@@ -75,5 +86,10 @@ BaselineOfCurrencyAPI >> setUpTestPackages: spec [
 	spec
 		package: 'Currency-System-Model-Tests'
 		with: [ spec requires: #( 'Currency-System-Model' 'Currency-Model-Tests' 'Kepler-SUnit' ) ];
-		group: 'Tests' with: 'Currency-System-Model-Tests'
+		group: 'Tests' with: 'Currency-System-Model-Tests'.
+
+	spec
+		package: 'Currency-API-Model-Tests'
+		with: [ spec requires: #( 'Stargate-SUnit' 'Kepler-SUnit' 'Currency-API-Model' ) ];
+		group: 'Tests' with: 'Currency-API-Model-Tests'
 ]
