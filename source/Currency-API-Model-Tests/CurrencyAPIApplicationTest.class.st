@@ -133,7 +133,7 @@ CurrencyAPIApplicationTest >> testActivationWithAllArguments [
 			   '[INFO] Obtaining configuration... [DONE]'
 				'[INFO] Installing system'
 			   '[INFO] Starting up system'
-				'[INFO] API Version: v'
+				'[INFO] API Version:'
 				'[INFO] Creating API...'
 			   '[INFO] Creating API... [DONE]'
 				'[INFO] Installing API...'
