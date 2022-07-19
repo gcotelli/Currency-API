@@ -5,7 +5,9 @@ A RESTful API showcasing a variety of libraries.
 [![Unit Tests](https://github.com/gcotelli/Currency-API/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/unit-tests.yml/badge.svg)
 [![Coverage Status](https://codecov.io/github/gcotelli/Currency-API/coverage.svg?branch=release-candidate)](https://codecov.io/gh/gcotelli/Currency-API/branch/release-candidate)
 [![Baseline Groups](https://github.com/gcotelli/Currency-API/actions/workflows/loading-groups.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/loading-groups.yml)
+[![API Tests](https://github.com/gcotelli/Currency-API/actions/workflows/api-tests.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/api-tests.yml/badge.svg)
 [![Markdown Lint](https://github.com/gcotelli/Currency-API/actions/workflows/markdown-lint.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/markdown-lint.yml)
+[![Shellcheck](https://github.com/gcotelli/Currency-API/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/shellcheck.yml)
 
 [![GitHub release](https://img.shields.io/github/release/gcotelli/Currency-API.svg)](https://github.com/gcotelli/Currency-API/releases/latest)
 [![Pharo 10](https://img.shields.io/badge/Pharo-10-informational)](https://pharo.org)

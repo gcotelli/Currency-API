@@ -1,0 +1,12 @@
+version: '3'
+services:
+  api:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    environment:
+      STARGATE__PUBLIC_URL: http://api:8080
+      STARGATE__PORT: 8080
+      STARGATE__OPERATIONS_SECRET: API-tests
+    ports:
+      - 8080:8080

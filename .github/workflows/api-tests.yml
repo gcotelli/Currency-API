@@ -1,0 +1,14 @@
+name: API Tests
+
+on: [push,pull_request,workflow_dispatch]
+
+jobs:
+   api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Run API tests using Docker
+        run: ./run-tests.sh
+        working-directory: ./api-tests/

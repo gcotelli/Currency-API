@@ -1,0 +1,27 @@
+{
+	"id": "c440ab34-7d66-47e6-b94d-9fa82051ee83",
+	"name": "Currencies",
+	"values": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8080",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "JPY_LOCATION",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "JPY_ETAG",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2022-07-19T13:58:09.671Z",
+	"_postman_exported_using": "Postman/9.25.0"
+}

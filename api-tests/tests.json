@@ -1,0 +1,1174 @@
+{
+	"info": {
+		"_postman_id": "6ff75c28-2c21-40d7-b4d5-207fd86476c8",
+		"name": "Currency API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Success cases",
+			"item": [
+				{
+					"name": "Create USD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/vnd.gcotelli.currency+json;version=1.0.0\");",
+									"});",
+									"pm.test(\"ETag is present\", () => {",
+									"    pm.response.to.have.header(\"Etag\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"shortName\": \"USD\",",
+									"        \"singularName\": \"United States Dollar\",",
+									"        \"pluralName\":\"United States Dollars\",",
+									"        \"ISO4217Code\": \"USD\",",
+									"        \"issueDate\": \"1792-04-02\",",
+									"        \"subUnitDenominator\": 100",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});",
+									"pm.test(\"Hypermedia controls are Ok\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.links.self).to.eql(pm.response.headers.get(\"location\"));",
+									"    pm.expect(jsonData.links.retireFromCirculation).to.eql(jsonData.links.self + \"/retire-from-circulation\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\": \"United States Dollar\",\n    \"pluralName\": \"United States Dollars\",\n    \"subUnitDenominator\": 100,\n    \"ISO4217Code\": \"USD\",\n    \"issueDate\": \"1792-04-02\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/currencies",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "USD created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+										"type": "default"
+									},
+									{
+										"key": "Accept",
+										"value": "application/vnd.gcotelli.currency+json;version=1",
+										"type": "default"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"singularName\": \"United States Dollar\",\n    \"pluralName\": \"United States Dollars\",\n    \"subUnitDenominator\": 100,\n    \"ISO4217Code\": \"USD\",\n    \"issueDate\": \"1792-04-02\"\n}"
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/currencies",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"currencies"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Zinc HTTP Components 1.0 (Pharo/10.0)"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Jul 2022 19:03:44 GMT"
+								},
+								{
+									"key": "Location",
+									"value": "http://api:8080/currencies/0dce92c3-7aa0-0d00-b779-db6b07dbd00d"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/vnd.gcotelli.currency+json;version=1.0.0"
+								},
+								{
+									"key": "Content-Length",
+									"value": "361"
+								},
+								{
+									"key": "Etag",
+									"value": "\"42a3ebec24b9a391925016cfc016573e008f062b\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "Max-Age=86400"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"shortName\": \"USD\",\n    \"singularName\": \"United States Dollar\",\n    \"pluralName\": \"United States Dollars\",\n    \"ISO4217Code\": \"USD\",\n    \"issueDate\": \"1792-04-02\",\n    \"subUnitDenominator\": 100,\n    \"links\": {\n        \"retireFromCirculation\": \"http://api:8080/currencies/0dce92c3-7aa0-0d00-b779-db6b07dbd00d/retire-from-circulation\",\n        \"self\": \"http://api:8080/currencies/0dce92c3-7aa0-0d00-b779-db6b07dbd00d\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create and get JPY",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const baseLocation = pm.environment.get(\"BASE_URL\");",
+									"",
+									"const postRequest = {",
+									"    url: (baseLocation + '/currencies'),",
+									"    method: 'POST',",
+									"    header: 'Content-Type:application/vnd.gcotelli.currency+json;version=1.0.0',",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            singularName:\"Japanese Yen\",",
+									"\t\t\tISO4217Code:\"JPY\",",
+									"\t\t\tissueDate:\"1871-06-27\"",
+									"            })",
+									"    }",
+									"};",
+									"pm.sendRequest(postRequest, (err, response) => {",
+									"    console.log(err ? err : response.json());",
+									"    pm.environment.set(\"JPY_LOCATION\", response.json().links.self);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful GET request\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/vnd.gcotelli.currency+json;version=1.0.0\");",
+									"});",
+									"pm.test(\"ETag is present\", () => {",
+									"    pm.response.to.have.header(\"Etag\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"\t    \"shortName\" : \"JPY\",",
+									"\t    \"singularName\" : \"Japanese Yen\",",
+									"\t    \"pluralName\" : \"Japanese Yen\",",
+									"\t    \"issueDate\" : \"1871-06-27\",",
+									"\t    \"ISO4217Code\" : \"JPY\",",
+									"\t    \"subUnitDenominator\" : 1",
+									"\t};",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});",
+									"pm.test(\"Hypermedia controls are Ok\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.links.self).to.eql(pm.variables.get(\"JPY_LOCATION\"));",
+									"    pm.expect(jsonData.links.retireFromCirculation).to.eql(jsonData.links.self + \"/retire-from-circulation\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{JPY_LOCATION}}",
+							"host": [
+								"{{JPY_LOCATION}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successfully GET JPY",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.gcotelli.currency+json;version=1",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "{{JPY_LOCATION}}",
+									"host": [
+										"{{JPY_LOCATION}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Zinc HTTP Components 1.0 (Pharo/10.0)"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Jul 2022 19:59:16 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/vnd.gcotelli.currency+json;version=1.0.0"
+								},
+								{
+									"key": "Content-Length",
+									"value": "354"
+								},
+								{
+									"key": "Etag",
+									"value": "\"11ee3413a925a0846a2dbe4660960f68f69f976b\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "Max-Age=86400"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"shortName\": \"JPY\",\n    \"singularName\": \"Japanese Yen\",\n    \"pluralName\": \"Japanese Yen\",\n    \"ISO4217Code\": \"JPY\",\n    \"issueDate\": \"1871-06-27\",\n    \"subUnitDenominator\": 1,\n    \"links\": {\n        \"retireFromCirculation\": \"http://localhost:8080/currencies/1a8e208a-7ba0-0d00-b798-777c0f4e068b/retire-from-circulation\",\n        \"self\": \"http://localhost:8080/currencies/1a8e208a-7ba0-0d00-b798-777c0f4e068b\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get currencies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful GET request\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/vnd.gcotelli.currency+json;version=1.0.0\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expectedJPY = {",
+									"        \"shortName\" : \"JPY\",",
+									"        \"singularName\" : \"Japanese Yen\",",
+									"        \"pluralName\" : \"Japanese Yen\",",
+									"        \"issueDate\" : \"1871-06-27\",",
+									"        \"ISO4217Code\" : \"JPY\",",
+									"        \"subUnitDenominator\" : 1",
+									"    };",
+									"    const expectedUSD = {",
+									"        \"shortName\": \"USD\",",
+									"        \"singularName\": \"United States Dollar\",",
+									"        \"pluralName\":\"United States Dollars\",",
+									"        \"ISO4217Code\": \"USD\",",
+									"        \"issueDate\": \"1792-04-02\",",
+									"        \"subUnitDenominator\": 100",
+									"    };",
+									"    pm.expect(pm.response.json().items[0]).to.deep.include(expectedJPY);",
+									"    pm.expect(pm.response.json().items[1]).to.deep.include(expectedUSD);",
+									"});",
+									"pm.test(\"Hypermedia controls are Ok\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.links.self).to.eql(pm.variables.get(\"BASE_URL\") + \"/currencies\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/currencies",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successfully get currencies",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.gcotelli.currency+json;version=1",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "{{BASE_URL}}/currencies",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"currencies"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Zinc HTTP Components 1.0 (Pharo/10.0)"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Jul 2022 20:05:57 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/vnd.gcotelli.currency+json;version=1.0.0"
+								},
+								{
+									"key": "Content-Length",
+									"value": "792"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "Max-Age=86400"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"items\": [\n        {\n            \"shortName\": \"JPY\",\n            \"singularName\": \"Japanese Yen\",\n            \"pluralName\": \"Japanese Yen\",\n            \"ISO4217Code\": \"JPY\",\n            \"issueDate\": \"1871-06-27\",\n            \"subUnitDenominator\": 1,\n            \"links\": {\n                \"retireFromCirculation\": \"http://localhost:8080/currencies/1a8e208a-7ba0-0d00-b798-777c0f4e068b/retire-from-circulation\",\n                \"self\": \"http://localhost:8080/currencies/1a8e208a-7ba0-0d00-b798-777c0f4e068b\"\n            }\n        },\n        {\n            \"shortName\": \"USD\",\n            \"singularName\": \"United States Dollar\",\n            \"pluralName\": \"United States Dollars\",\n            \"ISO4217Code\": \"USD\",\n            \"issueDate\": \"1792-04-02\",\n            \"subUnitDenominator\": 100,\n            \"links\": {\n                \"retireFromCirculation\": \"http://localhost:8080/currencies/99bab589-7ba0-0d00-b797-4a560f4e068b/retire-from-circulation\",\n                \"self\": \"http://localhost:8080/currencies/99bab589-7ba0-0d00-b797-4a560f4e068b\"\n            }\n        }\n    ],\n    \"links\": {\n        \"self\": \"http://localhost:8080/currencies\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Retire From Circulation JPY",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful PUT request\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"const getRequest = {",
+									"    url: (pm.variables.get(\"JPY_LOCATION\")),",
+									"    method: 'GET',",
+									"    header: 'Accept:application/vnd.gcotelli.currency+json;version=1'",
+									"};",
+									"pm.sendRequest(getRequest, function (err, getResponse) {",
+									"    console.log(err ? err : getResponse.json());",
+									"    pm.test(\"Response body is OK\", () => {",
+									"        const expected = {",
+									"            \"shortName\" : \"JPY\",",
+									"            \"singularName\" : \"Japanese Yen\",",
+									"            \"pluralName\" : \"Japanese Yen\",",
+									"            \"issueDate\" : \"1871-06-27\",",
+									"            \"ISO4217Code\" : \"JPY\",",
+									"            \"subUnitDenominator\" : 1",
+									"        };",
+									"        pm.expect(getResponse.json()).to.deep.include(expected);",
+									"    });",
+									"    pm.test(\"Hypermedia controls are Ok\", () => {",
+									"        const jsonData = getResponse.json();",
+									"        pm.expect(jsonData.links.self).to.eql(pm.variables.get(\"JPY_LOCATION\"));",
+									"        pm.expect(jsonData.links).to.not.have.property(\"retireFromCirculation\")",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{JPY_LOCATION}}/retire-from-circulation",
+							"host": [
+								"{{JPY_LOCATION}}"
+							],
+							"path": [
+								"retire-from-circulation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update JPY",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const baseLocation = pm.environment.get(\"JPY_LOCATION\");",
+									"",
+									"const getRequest = {",
+									"    url: baseLocation,",
+									"    method: 'GET',",
+									"    header: 'Accept:application/vnd.gcotelli.currency+json;version=1'",
+									"};",
+									"pm.sendRequest(getRequest, (err, response) => {",
+									"    console.log(err ? err : response.json());",
+									"    pm.environment.set(\"JPY_ETAG\", response.headers.get(\"ETag\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful GET request\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/vnd.gcotelli.currency+json;version=1.0.0\");",
+									"});",
+									"pm.test(\"ETag is present\", () => {",
+									"    pm.response.to.have.header(\"Etag\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"\t    \"shortName\" : \"JPY\",",
+									"\t    \"singularName\" : \"Yen\",",
+									"\t    \"pluralName\" : \"Yen\",",
+									"\t    \"issueDate\" : \"1871-06-27\",",
+									"\t    \"ISO4217Code\" : \"JPY\",",
+									"\t    \"subUnitDenominator\" : 1",
+									"\t};",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});",
+									"pm.test(\"Hypermedia controls are Ok\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.links.self).to.eql(pm.variables.get(\"JPY_LOCATION\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "If-Match",
+								"value": "{{JPY_ETAG}}",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\":\"Yen\",\n    \"pluralName\":\"Yen\"\n}"
+						},
+						"url": {
+							"raw": "{{JPY_LOCATION}}",
+							"host": [
+								"{{JPY_LOCATION}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successfully updated JPY",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+										"type": "default"
+									},
+									{
+										"key": "If-Match",
+										"value": "{{JPY_ETAG}}",
+										"type": "default"
+									},
+									{
+										"key": "Accept",
+										"value": "application/vnd.gcotelli.currency+json;version=1",
+										"type": "default"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"singularName\":\"Yen\",\n    \"pluralName\":\"Yen\"\n}"
+								},
+								"url": {
+									"raw": "{{JPY_LOCATION}}",
+									"host": [
+										"{{JPY_LOCATION}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Zinc HTTP Components 1.0 (Pharo/10.0)"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 19 Jul 2022 13:26:47 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/vnd.gcotelli.currency+json;version=1.0.0"
+								},
+								{
+									"key": "Content-Length",
+									"value": "216"
+								},
+								{
+									"key": "Etag",
+									"value": "\"9a4c5460b3bf6ab610c48d7d8321443ee33846ed\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "Max-Age=86400"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"shortName\": \"JPY\",\n    \"singularName\": \"Yen\",\n    \"pluralName\": \"Yen\",\n    \"ISO4217Code\": \"JPY\",\n    \"issueDate\": \"1871-06-27\",\n    \"subUnitDenominator\": 1,\n    \"links\": {\n        \"self\": \"http://localhost:8080/currencies/1a8e208a-7ba0-0d00-b798-777c0f4e068b\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get not modified JPY",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const baseLocation = pm.environment.get(\"JPY_LOCATION\");",
+									"",
+									"const getRequest = {",
+									"    url: baseLocation,",
+									"    method: 'GET',",
+									"    header: 'Accept:application/vnd.gcotelli.currency+json;version=1'",
+									"};",
+									"pm.sendRequest(getRequest, (err, response) => {",
+									"    console.log(err ? err : response.json());",
+									"    pm.environment.set(\"JPY_ETAG\", response.headers.get(\"ETag\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful GET request\", () => {",
+									"    pm.response.to.have.status(304);",
+									"});",
+									"pm.test(\"ETag is the same\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Etag\")).to.be.eql(pm.environment.get(\"JPY_ETAG\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "If-None-Match",
+								"value": "{{JPY_ETAG}}",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{JPY_LOCATION}}",
+							"host": [
+								"{{JPY_LOCATION}}"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Error Cases",
+			"item": [
+				{
+					"name": "Conflict on create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful POST request\", () => {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 409,",
+									"        \"message\": \"Something is in conflict with USD - Uruguayan Dollar\"",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\": \"Uruguayan Dollar\",\n    \"ISO4217Code\": \"USD\",\n    \"issueDate\": \"2022-04-02\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/currencies",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bad request on create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful POST request\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 400,",
+									"        \"message\": \"Missing #shortName field.\"",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\": \"Uruguayan Dollar\",\n    \"issueDate\": \"2022-04-02\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/currencies",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unprocessable entity on create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful POST request\", () => {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 422,",
+									"        \"message\": \"A currency can't have an empty name\"",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\": \"\",\n    \"pluralName\": \"Argentine Coin\",\n    \"ISO4217Code\": \"ARC\",\n    \"issueDate\": \"2022-04-02\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/currencies",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsupported media type on create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful POST request\", () => {",
+									"    pm.response.to.have.status(415);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 415,",
+									"        \"message\": \"Decoder not found for given media type\"",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/xml",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<currency/>"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/currencies",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Not accepted media type on get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful GET request\", () => {",
+									"    pm.response.to.have.status(406);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 406,",
+									"        \"message\": \"Cannot generate a response entity with acceptable characteristics.\",",
+									"        \"allowedMediaTypes\": [",
+									"            \"application/vnd.gcotelli.unit-of-account+json;version=1.0.0\",",
+									"            \"application/vnd.gcotelli.medium-of-exchange+json;version=1.0.0\",",
+									"            \"application/vnd.gcotelli.currency+json;version=1.0.0\"",
+									"        ],",
+									"        \"allowedLanguageTags\": [],",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/xml",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{JPY_LOCATION}}",
+							"host": [
+								"{{JPY_LOCATION}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Currency not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful GET request\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/currencies/XXX",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies",
+								"XXX"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Can't retire from circulation currency not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful PUT request\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/currencies/XXX/retire-from-circulation",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currencies",
+								"XXX",
+								"retire-from-circulation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Precondition failed on update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful PATCH request\", () => {",
+									"    pm.response.to.have.status(412);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 412,",
+									"        \"message\": \"Precondition Failed\"",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							},
+							{
+								"key": "If-Match",
+								"value": "\"XXX\"",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\": \"Argentine Peso\",\n    \"ISO4217Code\": \"ARS\",\n    \"subUnitDenominator\": 100,\n    \"issueDate\": \"1991-01-02\"\n}"
+						},
+						"url": {
+							"raw": "{{JPY_LOCATION}}",
+							"host": [
+								"{{JPY_LOCATION}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Precondition required on update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unsuccessful PATCH request\", () => {",
+									"    pm.response.to.have.status(428);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"        \"code\": 428,",
+									"        \"message\": \"Missing If-Match header.\"",
+									"    };",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.gcotelli.currency+json;version=1.0.0",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/vnd.gcotelli.currency+json;version=1",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"singularName\": \"Argentine Peso\",\n    \"ISO4217Code\": \"ARS\",\n    \"subUnitDenominator\": 100,\n    \"issueDate\": \"1991-01-02\"\n}"
+						},
+						"url": {
+							"raw": "{{JPY_LOCATION}}",
+							"host": [
+								"{{JPY_LOCATION}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

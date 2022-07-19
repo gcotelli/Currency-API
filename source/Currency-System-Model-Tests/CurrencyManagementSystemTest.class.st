@@ -31,7 +31,7 @@ CurrencyManagementSystemTest >> setUp [
 { #category : #'private - running' }
 CurrencyManagementSystemTest >> setUpRequirements [
 
-	self registerSubsystem: CurrencyManagementSystem new
+	self requireInstallationOf: CurrencyManagementModule
 ]
 
 { #category : #'private - accessing' }
