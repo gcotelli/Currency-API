@@ -10,4 +10,5 @@ jobs:
         with:
           fetch-depth: 2
       - name: Run API tests using Docker
-        run: ./api-tests/run-tests.sh
+        run: ./run-tests.sh
+        working-directory: ./api-tests/
