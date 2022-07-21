@@ -6,6 +6,8 @@ A RESTful API showcasing a variety of libraries.
 [![Coverage Status](https://codecov.io/github/gcotelli/Currency-API/coverage.svg?branch=release-candidate)](https://codecov.io/gh/gcotelli/Currency-API/branch/release-candidate)
 [![Baseline Groups](https://github.com/gcotelli/Currency-API/actions/workflows/loading-groups.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/loading-groups.yml)
 [![API Tests](https://github.com/gcotelli/Currency-API/actions/workflows/api-tests.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/api-tests.yml/badge.svg)
+
+[![Docker build](https://github.com/gcotelli/Currency-API/actions/workflows/docker-build.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/docker-build.yml)
 [![Markdown Lint](https://github.com/gcotelli/Currency-API/actions/workflows/markdown-lint.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/markdown-lint.yml)
 [![Shellcheck](https://github.com/gcotelli/Currency-API/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/gcotelli/Currency-API/actions/workflows/shellcheck.yml)
 
