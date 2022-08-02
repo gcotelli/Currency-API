@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'currency',
 		'isCirculating',
-		'uuid'
+		'uuid',
+		'sequentialNumber'
 	],
 	#category : #'Currency-System-Model'
 }
@@ -81,6 +82,12 @@ StatusAwareCurrency >> pluralName [
 StatusAwareCurrency >> printOn: stream [
 
 	currency printOn: stream
+]
+
+{ #category : #accessing }
+StatusAwareCurrency >> sequentialNumber [
+
+	^ sequentialNumber
 ]
 
 { #category : #accessing }

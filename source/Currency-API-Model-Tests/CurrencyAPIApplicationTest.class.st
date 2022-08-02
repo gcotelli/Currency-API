@@ -13,12 +13,20 @@ Class {
 }
 
 { #category : #private }
+CurrencyAPIApplicationTest >> allPostgreSQLArguments [
+
+	^ #( '--sagan.pg-hostname=localhost' '--sagan.pg-username=postgres' '--sagan.pg-password=secret'
+	     '--sagan.pg-database-name=test' )
+]
+
+{ #category : #private }
 CurrencyAPIApplicationTest >> basicArguments [
 
 	^ { 
 		  '--stargate.public-url='.
-		  '--stargate.port=<1p>' expandMacrosWith: port.
-		  '--stargate.operations-secret=XXX' }
+		  '--stargate.port=<1p>' expandMacrosWith: port .
+		  '--stargate.operations-secret=XXX'.
+		  '--stargate.consul-agent-location=' }
 ]
 
 { #category : #running }
@@ -72,7 +80,10 @@ CurrencyAPIApplicationTest >> testAccessing [
 		assert: CurrencyAPIApplication description
 		equals: 'I provide a RESTful API over HTTP to manage currencies';
 		assert: CurrencyAPIApplication version notEmpty;
-		assert: CurrencyAPIApplication applicationBaselineName equals: #BaselineOfCurrencyAPI
+		assert: CurrencyAPIApplication applicationBaselineName equals: #BaselineOfCurrencyAPI;
+		assert: CurrencyAPIApplication defaultMaxActiveSessionsCount equals: 5;
+		assert: CurrencyAPIApplication defaultMaxIdleSessionsCount equals: 5;
+		assert: CurrencyAPIApplication defaultMinIdleSessionsCount equals: 2
 ]
 
 { #category : #private }
@@ -117,19 +128,39 @@ CurrencyAPIApplicationTest >> testActivationMissingPublicURL [
 { #category : #private }
 CurrencyAPIApplicationTest >> testActivationWithAllArguments [
 
-	self shouldnt: [ self start: CurrencyAPIApplication withAll: self basicArguments ] raise: Exit.
+	self shouldnt: [ self start: CurrencyAPIApplication withAll: self basicArguments , self allPostgreSQLArguments ]
+		  raise: Exit.
 
 	self
 		assert: application configuration stargate publicURL isEmpty;
-		assert: application configuration stargate port equals: port.
+		assert: application configuration stargate port equals: port;
+		assert: application saganConfiguration pgHostname equals: 'localhost';
+		assert: application saganConfiguration pgUsername equals: 'postgres';
+		assert: application saganConfiguration pgPassword equals:  'secret';
+		assert: application saganConfiguration pgDatabaseName equals: 'test'.
 
 	logger recordings
 		with: #( 
 				'[INFO] currency-api'
 				'[INFO] Obtaining configuration...'
+				'[WARNING] "Scheme" parameter not provided. Using default.'
+				'[WARNING] "Service Discovery Healthcheck interval ms" parameter not provided. Using default.'
+				'[WARNING] "Service Discovery Timeout ms" parameter not provided. Using default.'
+				'[WARNING] "Service Discovery Time Slot between retries in ms" parameter not provided. Using default.'
+				'[WARNING] "PG Port" parameter not provided. Using default.'
 			   '[INFO] Public URL: /'
 				'[INFO] Port:'
 				'[INFO] Operations Secret: **********'
+				'[INFO] Consul Agent Location: /'
+				'[INFO] Scheme: http'
+				'[INFO] Service Discovery Healthcheck interval ms: 10000'
+				'[INFO] Service Discovery Timeout ms: 60000'
+				'[INFO] Service Discovery Time Slot between retries in ms: 100'
+				'[INFO] PG Hostname: localhost'
+				'[INFO] PG Port: 5432'
+				'[INFO] PG Username: postgres'
+				'[INFO] PG Password: **********'
+				'[INFO] PG Database Name: test'
 			   '[INFO] Obtaining configuration... [DONE]'
 				'[INFO] Installing system'
 			   '[INFO] Starting up system'

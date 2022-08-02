@@ -11,13 +11,15 @@ FROM ghcr.io/ba-st/launchpad:v4
 
 USER root
 
+COPY ./docker/api-start.sh ./
 COPY --from=loader /opt/pharo/Pharo.image ./
 COPY --from=loader /opt/pharo/Pharo.changes ./
 COPY --from=loader /opt/pharo/Pharo*.sources ./
 
 RUN mkdir logs \
+  && chmod a+x api-start.sh \
   && chown --recursive pharo:users /opt/pharo
 
 USER pharo
 
-CMD [ "launchpad-start", "currency-api" ]
+CMD [ "./api-start.sh" ]

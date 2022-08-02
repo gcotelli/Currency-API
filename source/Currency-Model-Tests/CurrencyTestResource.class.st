@@ -17,8 +17,11 @@ CurrencyTestResource >> setUp [
 		       pluralNamed: 'United States Dollars'
 		       subUnitDenominator: 100
 		       withISO4217Code: 'USD'
-		       issuedOn: April second , 1792.
-	yen := Currency named: 'Japanese Yen' withISO4217Code: 'JPY' issuedOn: June twentyseventh , 1871
+		       issuedOn: ( April second , 1792 ) asSmalltalkDate.
+	yen := Currency
+		       named: 'Japanese Yen'
+		       withISO4217Code: 'JPY'
+		       issuedOn: ( June twentyseventh , 1871 ) asSmalltalkDate
 ]
 
 { #category : #accessing }
