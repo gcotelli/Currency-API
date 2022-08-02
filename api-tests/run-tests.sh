@@ -2,6 +2,10 @@
 
 set -eux
 
+docker-compose up -d db
+# We need to wait for postgreSQL to finish starting up
+sleep 10
+
 docker-compose up -d --build api
 sleep 5
 
