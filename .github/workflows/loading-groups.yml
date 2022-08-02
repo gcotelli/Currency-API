@@ -16,6 +16,16 @@ jobs:
       - uses: hpi-swa/setup-smalltalkCI@v1
         with:
           smalltalk-image: ${{ matrix.smalltalk }}
+      - name: Set up PostgreSQL
+        run: |
+          docker run -d -p 127.0.0.1:5432:5432 \
+            -e POSTGRES_PASSWORD=secret \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_DB=test \
+            postgres:14 \
+            -c ssl=on \
+            -c ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem \
+            -c ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
       - name: Load group in image
         run: smalltalkci -s ${{ matrix.smalltalk }} .smalltalkci/loading.${{ matrix.load-spec }}.ston
         env:
