@@ -80,7 +80,10 @@ CurrencyAPIApplicationTest >> testAccessing [
 		assert: CurrencyAPIApplication description
 		equals: 'I provide a RESTful API over HTTP to manage currencies';
 		assert: CurrencyAPIApplication version notEmpty;
-		assert: CurrencyAPIApplication applicationBaselineName equals: #BaselineOfCurrencyAPI
+		assert: CurrencyAPIApplication applicationBaselineName equals: #BaselineOfCurrencyAPI;
+		assert: CurrencyAPIApplication defaultMaxActiveSessionsCount equals: 5;
+		assert: CurrencyAPIApplication defaultMaxIdleSessionsCount equals: 5;
+		assert: CurrencyAPIApplication defaultMinIdleSessionsCount equals: 2
 ]
 
 { #category : #private }
