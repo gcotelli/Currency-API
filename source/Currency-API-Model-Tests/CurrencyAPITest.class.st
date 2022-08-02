@@ -46,6 +46,12 @@ CurrencyAPITest >> newClientWithReader [
 ]
 
 { #category : #running }
+CurrencyAPITest >> registerMainDBRepositoryProviderIn: repositorySystem [
+
+	repositorySystem register: InMemoryRepositoryProvider new as: #mainDB
+]
+
+{ #category : #running }
 CurrencyAPITest >> setUpAPI [
 
 	self setUpController.
@@ -63,7 +69,13 @@ CurrencyAPITest >> setUpController [
 CurrencyAPITest >> setUpUserStory [
 
 	userStory := PluggableUserStoryTest requiring: [ :test | 
-		             test registerSubsystem: CurrencyManagementSystem new ].
+		             | repositorySystem |
+		             repositorySystem := RepositoryProviderSystem new.
+		             self registerMainDBRepositoryProviderIn: repositorySystem.
+		             test
+			             registerSubsystem: CurrencyManagementSystem new;
+			             registerSubsystem: repositorySystem
+		             ].
 	userStory setUp
 ]
 

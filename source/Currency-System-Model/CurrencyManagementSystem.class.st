@@ -58,7 +58,7 @@ CurrencyManagementSystem >> currencyIdentifiedBy: anIdentifier [
 { #category : #installing }
 CurrencyManagementSystem >> dependencies [
 
-	^ #(  )
+	^ #( RepositoryProviderSystem )
 ]
 
 { #category : #querying }
@@ -95,8 +95,13 @@ CurrencyManagementSystem >> name [
 CurrencyManagementSystem >> resolveDependencies [
 
 	super resolveDependencies.
-	currencies := InMemoryRepository checkingConflictsAccordingTo:
-		              ( CriteriaBasedConflictCheckingStrategy forSingleAspectMatching: #shortName )
+	currencies := self >> #RepositoryProviderSystem
+		              createRepositoryFor: #mainDB
+		              storingObjectsOfType: StatusAwareCurrency
+		              checkingConflictsAccordingTo:
+		              ( CriteriaBasedConflictCheckingStrategy forSingleAspectMatching: #shortName ).
+
+	currencies configureMappingsIn: CurrencyRDBMSMappingConfiguration new
 ]
 
 { #category : #management }

@@ -16,6 +16,12 @@ CurrencyManagementSystemTest class >> resources [
 	^ { CurrencyTestResource }
 ]
 
+{ #category : #'private - running' }
+CurrencyManagementSystemTest >> repositoryProvider [
+
+	^ InMemoryRepositoryProvider new
+]
+
 { #category : #running }
 CurrencyManagementSystemTest >> setUp [
 
@@ -25,12 +31,15 @@ CurrencyManagementSystemTest >> setUp [
 		           pluralNamed: 'Australes'
 		           subUnitDenominator: 100
 		           withISO4217Code: 'ARA'
-		           issuedOn: June fifteenth , 1985
+		           issuedOn: ( June fifteenth , 1985 ) asSmalltalkDate
 ]
 
 { #category : #'private - running' }
 CurrencyManagementSystemTest >> setUpRequirements [
 
+	self registerSubsystem: ( RepositoryProviderSystem new
+			  register: self repositoryProvider as: #mainDB;
+			  yourself ).
 	self requireInstallationOf: CurrencyManagementModule
 ]
 
@@ -49,7 +58,10 @@ CurrencyManagementSystemTest >> testCantStoreCurrencyWithTheSameShortName [
 	self
 		should: [ 
 			self systemUnderTest storeCurrency:
-				( Currency named: 'Dollar' withISO4217Code: 'USD' issuedOn: January first , 2022 )
+				( Currency
+					  named: 'Dollar'
+					  withISO4217Code: 'USD'
+					  issuedOn: ( January first , 2022 ) asSmalltalkDate )
 			]
 		raise: ConflictingObjectFound
 		withMessageText: 'Something is in conflict with USD - Dollar'
@@ -147,8 +159,10 @@ CurrencyManagementSystemTest >> testStoreCurrenciesWithTheSameName [
 	self assert: self systemUnderTest currencies isEmpty.
 
 	self systemUnderTest storeCurrency: self usd.
-	self systemUnderTest storeCurrency:
-		( Currency named: self usd singularName withISO4217Code: 'USN' issuedOn: April first , 2000 ).
+	self systemUnderTest storeCurrency: ( Currency
+			  named: self usd singularName
+			  withISO4217Code: 'USN'
+			  issuedOn: ( April first , 2000 ) asSmalltalkDate ).
 
 	self systemUnderTest currencies in: [ :currencies | 
 		self
