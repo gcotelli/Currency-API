@@ -8,5 +8,18 @@ services:
       STARGATE__PUBLIC_URL: http://api:8080
       STARGATE__PORT: 8080
       STARGATE__OPERATIONS_SECRET: API-tests
+      STARGATE__CONSUL_AGENT_LOCATION: ''
+      SAGAN__PG_HOSTNAME: db
+      SAGAN__PG_USERNAME: postgres
+      SAGAN__PG_PASSWORD: secret
+      SAGAN__PG_DATABASE_NAME: test
+      RDBMS_CREATE_EMPTY_DATABASE: 'true'
     ports:
       - 8080:8080
+  db:
+    image: postgres:14
+    command: -c ssl=on -c ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem -c ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: postgres
+      POSTGRES_DB: test
