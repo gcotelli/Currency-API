@@ -1,9 +1,6 @@
 Class {
 	#name : #CurrencyAPIApplication,
-	#superclass : #StargateApplication,
-	#instVars : [
-		'rootSystemOptional'
-	],
+	#superclass : #PersistentAPIApplication,
 	#category : #'Currency-API-Model'
 }
 
@@ -19,6 +16,24 @@ CurrencyAPIApplication class >> commandName [
 	^ 'currency-api'
 ]
 
+{ #category : #private }
+CurrencyAPIApplication class >> defaultMaxActiveSessionsCount [
+
+	^ 5
+]
+
+{ #category : #private }
+CurrencyAPIApplication class >> defaultMaxIdleSessionsCount [
+
+	^ 5
+]
+
+{ #category : #private }
+CurrencyAPIApplication class >> defaultMinIdleSessionsCount [
+
+	^ 2
+]
+
 { #category : #accessing }
 CurrencyAPIApplication class >> description [
 
@@ -32,58 +47,28 @@ CurrencyAPIApplication class >> initialize [
 	self initializeVersion
 ]
 
-{ #category : #'private - activation/deactivation' }
-CurrencyAPIApplication >> basicStartWithin: context [
+{ #category : #accessing }
+CurrencyAPIApplication class >> saganConfigurationParameters [
 
-	self installAndStartRootSystem.
-	super basicStartWithin: context
-]
-
-{ #category : #'private - activation/deactivation' }
-CurrencyAPIApplication >> basicStop [
-
-	super basicStop.
-	self withRootSystemDo: [ :system | 
-		LaunchpadLogRecord emitInfo: 'Stopping system'.
-		system shutDown
-		]
+	^ CreateEmptyCurrencyAPIRDBMSApplication saganConfigurationParameters
 ]
 
 { #category : #'private - accessing' }
 CurrencyAPIApplication >> controllersToInstall [
 
-	| controllersToInstall |
-
-	controllersToInstall := OrderedCollection new.
-	self withRootSystemDo: [ :rootSystem | 
-		controllersToInstall add: ( CurrencyRESTfulController workingWith: rootSystem ) ].
-	^ controllersToInstall
-]
-
-{ #category : #initialization }
-CurrencyAPIApplication >> initialize [
-
-	super initialize.
-	rootSystemOptional := Optional unused
-]
-
-{ #category : #'private - activation/deactivation' }
-CurrencyAPIApplication >> installAndStartRootSystem [
-
-	LaunchpadLogRecord emitInfo: 'Installing system'.
-	rootSystemOptional := Optional containing: ( self installation install: self class version ).
-	LaunchpadLogRecord emitInfo: 'Starting up system'.
-	self withRootSystemDo: [ :system | system startUp ]
+	^ { CurrencyRESTfulController workingWith: rootSystem }
 ]
 
 { #category : #'private - accessing' }
 CurrencyAPIApplication >> installation [
 
-	^ CurrencyAPIInstallation new
+	^ CurrencyAPIInstallation installedBy: self
 ]
 
-{ #category : #enumerating }
-CurrencyAPIApplication >> withRootSystemDo: aBlock [
+{ #category : #'private - accessing' }
+CurrencyAPIApplication >> serviceDefinitions [
 
-	rootSystemOptional withContentDo: aBlock
+	^ { self
+		    buildServiceDefinitionNamed: 'currencies'
+		    configuredBy: [ :builder | builder addTag: 'requires-backup' ] }
 ]

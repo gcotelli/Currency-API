@@ -192,8 +192,13 @@ CurrencyRESTfulControllerTest >> setUpResourceController [
 CurrencyRESTfulControllerTest >> setUpUserStoryTest [
 
 	userStory := PluggableUserStoryTest requiring: [ :test | 
-		             test registerSubsystem:
-			             ( CurrencyManagementSystem using: self sequentialIdentifiers readStream ) ].
+		             test
+			             registerSubsystem: ( RepositoryProviderSystem new
+					               register: InMemoryRepositoryProvider new as: #mainDB;
+					               yourself );
+			             registerSubsystem:
+			             ( CurrencyManagementSystem using: self sequentialIdentifiers readStream )
+		             ].
 	userStory setUp
 ]
 
