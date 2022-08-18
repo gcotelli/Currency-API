@@ -162,7 +162,7 @@ CurrencyAPIApplication >> requestDataExportDefinition [
 			  | taskId |
 			  taskId := UUID new printString.
 			  publisher requestDataExportBy: requestor identifiedWith: taskId.
-			  { #taskId -> taskId } asOrderedDictionary
+			  { #taskId -> taskId } asDictionary
 			  ]
 	  ]
 ]
