@@ -3,7 +3,7 @@ services:
   api:
     build:
       context: ../
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile-API
     environment:
       STARGATE__PUBLIC_URL: http://api:8080
       STARGATE__PORT: 8080
@@ -14,6 +14,13 @@ services:
       SAGAN__PG_PASSWORD: secret
       SAGAN__PG_DATABASE_NAME: test
       RDBMS_CREATE_EMPTY_DATABASE: 'true'
+      WORKER_QUEUE_NAME: tasks
+      RABBITMQ__USERNAME: guest
+      RABBITMQ__PASSWORD: guest
+      RABBITMQ__HOSTNAME: rabbitmq
+    depends_on:
+      - db
+      - rabbitmq
     ports:
       - 8080:8080
   db:
@@ -23,3 +30,5 @@ services:
       POSTGRES_PASSWORD: secret
       POSTGRES_USER: postgres
       POSTGRES_DB: test
+  rabbitmq:
+    image: rabbitmq:latest

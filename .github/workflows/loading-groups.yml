@@ -26,6 +26,10 @@ jobs:
             -c ssl=on \
             -c ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem \
             -c ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+      - name: Set up RabbitMQ
+        run: |
+          docker run -d -p 127.0.0.1:5672:5672 \
+            rabbitmq:latest
       - name: Load group in image
         run: smalltalkci -s ${{ matrix.smalltalk }} .smalltalkci/loading.${{ matrix.load-spec }}.ston
         env:

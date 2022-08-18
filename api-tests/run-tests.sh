@@ -2,6 +2,7 @@
 
 set -eux
 
+docker-compose up -d rabbitmq
 docker-compose up -d db
 # We need to wait for postgreSQL to finish starting up
 sleep 10
