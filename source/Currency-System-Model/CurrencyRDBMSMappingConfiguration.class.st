@@ -45,7 +45,7 @@ CurrencyRDBMSMappingConfiguration >> currencyDescriptor [
 									      self issueDateFieldName.
 									      self subUnitDenominatorFieldName }
 							      between: self currencyTableName
-							      and: #EMBEDDED_CURRENCy ) ) }
+							      and: self embeddedCurrencyTableName ) ) }
 ]
 
 { #category : #private }
