@@ -23,6 +23,24 @@ services:
       - rabbitmq
     ports:
       - 8080:8080
+  exporter:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile-Worker
+    environment:
+      SAGAN__PG_HOSTNAME: db
+      SAGAN__PG_USERNAME: postgres
+      SAGAN__PG_PASSWORD: secret
+      SAGAN__PG_DATABASE_NAME: test
+      WORKER_QUEUE_NAME: tasks
+      RABBITMQ__USERNAME: guest
+      RABBITMQ__PASSWORD: guest
+      RABBITMQ__HOSTNAME: rabbitmq
+    depends_on:
+      - db
+      - rabbitmq
+    ports:
+      - 8081:8081
   db:
     image: postgres:14
     command: -c ssl=on -c ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem -c ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key

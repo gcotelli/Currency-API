@@ -8,6 +8,12 @@
 			"type": "default",
 			"enabled": true
 		},
+    {
+			"key": "FILE_SERVER",
+			"value": "http://exporter:8081",
+			"type": "default",
+			"enabled": true
+		},
 		{
 			"key": "JPY_LOCATION",
 			"value": "",
@@ -18,6 +24,12 @@
 			"key": "JPY_ETAG",
 			"value": "",
 			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "TASK_ID",
+			"value": "",
+			"type": "any",
 			"enabled": true
 		}
 	],

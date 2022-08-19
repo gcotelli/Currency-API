@@ -4,6 +4,9 @@ Currency API includes the following groups in its Baseline that can be used as
 loading targets:
 
 - `API-Deployment` will load all the packages needed in a deployed application
+  for running the API
+- `Worker-Deployment` will load all the packages needed in a deployed application
+  for running the exporter
 - `Tests` will load the test cases
 - `CI` is the group loaded in the continuous integration setup, in this
   particular case it is the same as `Tests`
