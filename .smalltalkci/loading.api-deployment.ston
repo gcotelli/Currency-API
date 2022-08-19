@@ -3,7 +3,7 @@ SmalltalkCISpec {
     SCIMetacelloLoadSpec {
       #baseline : 'CurrencyAPI',
       #directory : '../source',
-      #load : [ 'Deployment' ],
+      #load : [ 'API-Deployment' ],
       #platforms : [  #pharo ]
     }
   ],
