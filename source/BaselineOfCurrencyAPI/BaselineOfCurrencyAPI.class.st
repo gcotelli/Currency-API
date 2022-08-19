@@ -64,17 +64,24 @@ BaselineOfCurrencyAPI >> setUpDeploymentPackages: spec [
 
 	spec
 		package: 'Currency-Model' with: [ spec requires: 'Buoy-Deployment' ];
-		group: 'API-Deployment' with: 'Currency-Model'.
+		group: 'API-Deployment' with: 'Currency-Model';
+		group: 'Worker-Deployment' with: 'Currency-Model'.
 
 	spec
 		package: 'Currency-System-Model'
 		with: [ spec requires: #( 'PersistentAPISkeleton-PostgreSQL' 'Currency-Model' ) ];
-		group: 'API-Deployment' with: 'Currency-System-Model'.
+		group: 'API-Deployment' with: 'Currency-System-Model';
+		group: 'Worker-Deployment' with: 'Currency-System-Model'.
 
 	spec
 		package: 'Currency-API-Model'
 		with: [ spec requires: #( 'Currency-System-Model' 'Ansible-RabbitMQ' ) ];
-		group: 'API-Deployment' with: 'Currency-API-Model'
+		group: 'API-Deployment' with: 'Currency-API-Model'.
+
+	spec
+		package: 'Currency-Exporter-Model'
+		with: [ spec requires: #( 'Currency-System-Model' 'Ansible-RabbitMQ' ) ];
+		group: 'Worker-Deployment' with: 'Currency-Exporter-Model'
 ]
 
 { #category : #baselines }
@@ -94,5 +101,10 @@ BaselineOfCurrencyAPI >> setUpTestPackages: spec [
 	spec
 		package: 'Currency-API-Model-Tests'
 		with: [ spec requires: #( 'PersistentAPISkeleton-SUnit' 'Currency-API-Model' ) ];
-		group: 'Tests' with: 'Currency-API-Model-Tests'
+		group: 'Tests' with: 'Currency-API-Model-Tests'.
+
+	spec
+		package: 'Currency-Exporter-Model-Tests'
+		with: [ spec requires: #( 'PersistentAPISkeleton-SUnit' 'Currency-Exporter-Model' ) ];
+		group: 'Tests' with: 'Currency-Exporter-Model-Tests'
 ]
