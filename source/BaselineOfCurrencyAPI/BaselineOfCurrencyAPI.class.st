@@ -52,7 +52,11 @@ BaselineOfCurrencyAPI >> setUpDependencies: spec [
 			with: [ spec loads: 'Dependent-SUnit-Extensions' ];
 		project: 'PersistentAPISkeleton-Tools'
 			copyFrom: 'PersistentAPISkeleton'
-			with: [ spec loads: 'Tools' ]
+			with: [ spec loads: 'Tools' ].
+
+	spec
+		baseline: 'Ansible' with: [ spec repository: 'github://ba-st/Ansible:v2' ];
+		project: 'Ansible-RabbitMQ' copyFrom: 'Ansible' with: [ spec loads: 'RabbitMQ' ]
 ]
 
 { #category : #baselines }
@@ -60,16 +64,24 @@ BaselineOfCurrencyAPI >> setUpDeploymentPackages: spec [
 
 	spec
 		package: 'Currency-Model' with: [ spec requires: 'Buoy-Deployment' ];
-		group: 'Deployment' with: 'Currency-Model'.
+		group: 'API-Deployment' with: 'Currency-Model';
+		group: 'Worker-Deployment' with: 'Currency-Model'.
 
 	spec
 		package: 'Currency-System-Model'
 		with: [ spec requires: #( 'PersistentAPISkeleton-PostgreSQL' 'Currency-Model' ) ];
-		group: 'Deployment' with: 'Currency-System-Model'.
+		group: 'API-Deployment' with: 'Currency-System-Model';
+		group: 'Worker-Deployment' with: 'Currency-System-Model'.
 
 	spec
-		package: 'Currency-API-Model' with: [ spec requires: 'Currency-System-Model' ];
-		group: 'Deployment' with: 'Currency-API-Model'
+		package: 'Currency-API-Model'
+		with: [ spec requires: #( 'Currency-System-Model' 'Ansible-RabbitMQ' ) ];
+		group: 'API-Deployment' with: 'Currency-API-Model'.
+
+	spec
+		package: 'Currency-Exporter-Model'
+		with: [ spec requires: #( 'Currency-System-Model' 'Ansible-RabbitMQ' ) ];
+		group: 'Worker-Deployment' with: 'Currency-Exporter-Model'
 ]
 
 { #category : #baselines }
@@ -89,5 +101,10 @@ BaselineOfCurrencyAPI >> setUpTestPackages: spec [
 	spec
 		package: 'Currency-API-Model-Tests'
 		with: [ spec requires: #( 'PersistentAPISkeleton-SUnit' 'Currency-API-Model' ) ];
-		group: 'Tests' with: 'Currency-API-Model-Tests'
+		group: 'Tests' with: 'Currency-API-Model-Tests'.
+
+	spec
+		package: 'Currency-Exporter-Model-Tests'
+		with: [ spec requires: #( 'PersistentAPISkeleton-SUnit' 'Currency-Exporter-Model' ) ];
+		group: 'Tests' with: 'Currency-Exporter-Model-Tests'
 ]

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6ff75c28-2c21-40d7-b4d5-207fd86476c8",
+		"_postman_id": "7b231b53-b4eb-43fa-98c0-6f1d34302dd9",
 		"name": "Currency API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -684,6 +684,125 @@
 									"value": null,
 									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Currencies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Content-Type is present\", () => {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type is the expected one\", () => {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+									"});",
+									"pm.test(\"Response body is OK\", () => {",
+									"    const expected = {",
+									"\t    \"jsonrpc\" : \"2.0\",",
+									"\t    \"id\" : 1",
+									"\t};",
+									"    pm.expect(pm.response.json()).to.deep.include(expected);",
+									"});",
+									"pm.test(\"Result includes taskId\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result.taskId).to.be.not.empty;",
+									"    pm.environment.set(\"TASK_ID\", jsonData.result.taskId);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"export\",\n    \"params\": {\n        \"requestor\": \"user@example.com\"\n    },\n    \"id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/currency-export",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"currency-export"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Export Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response body is OK\", () => {",
+									"    const jpy = {",
+									"        \"shortName\": \"JPY\",",
+									"        \"singularName\": \"Yen\",",
+									"        \"pluralName\": \"Yen\",",
+									"        \"ISO4217Code\": \"JPY\",",
+									"        \"issueDate\": \"1871-06-27\",",
+									"        \"subUnitDenominator\": 1",
+									"        };",
+									"    const usd = {",
+									"        \"shortName\": \"USD\",",
+									"        \"singularName\": \"United States Dollar\",",
+									"        \"pluralName\": \"United States Dollars\",",
+									"        \"ISO4217Code\": \"USD\",",
+									"        \"issueDate\": \"1792-04-02\",",
+									"        \"subUnitDenominator\": 100",
+									"        };",
+									"    pm.expect(pm.response.json()[0]).to.deep.include(jpy);",
+									"    pm.expect(pm.response.json()[1]).to.deep.include(usd);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{FILE_SERVER}}/export-data/{{TASK_ID}}.json",
+							"host": [
+								"{{FILE_SERVER}}"
+							],
+							"path": [
+								"export-data",
+								"{{TASK_ID}}.json"
 							]
 						}
 					},

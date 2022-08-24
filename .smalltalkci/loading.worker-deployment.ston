@@ -1,0 +1,13 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'CurrencyAPI',
+      #directory : '../source',
+      #load : [ 'Worker-Deployment' ],
+      #platforms : [  #pharo ]
+    }
+  ],
+  #testing : {
+    #failOnZeroTests : false
+  }
+}

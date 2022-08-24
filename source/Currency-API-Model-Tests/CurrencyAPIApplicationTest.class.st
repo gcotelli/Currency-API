@@ -24,9 +24,16 @@ CurrencyAPIApplicationTest >> basicArguments [
 
 	^ { 
 		  '--stargate.public-url='.
-		  '--stargate.port=<1p>' expandMacrosWith: port .
+		  '--stargate.port=<1p>' expandMacrosWith: port.
 		  '--stargate.operations-secret=XXX'.
-		  '--stargate.consul-agent-location=' }
+		  '--stargate.consul-agent-location='.
+		  '--worker-queue-name=worker' }
+]
+
+{ #category : #private }
+CurrencyAPIApplicationTest >> rabbitMQArguments [
+
+	^ #( '--rabbitmq.username=guest' '--rabbitmq.password=guest' '--rabbitmq.hostname=localhost' )
 ]
 
 { #category : #running }
@@ -128,16 +135,21 @@ CurrencyAPIApplicationTest >> testActivationMissingPublicURL [
 { #category : #private }
 CurrencyAPIApplicationTest >> testActivationWithAllArguments [
 
-	self shouldnt: [ self start: CurrencyAPIApplication withAll: self basicArguments , self allPostgreSQLArguments ]
+	self shouldnt: [ self start: CurrencyAPIApplication 
+						 		withAll: self basicArguments , self allPostgreSQLArguments , self rabbitMQArguments  ]
 		  raise: Exit.
 
 	self
 		assert: application configuration stargate publicURL isEmpty;
-		assert: application configuration stargate port equals: port;
+		assert: application configuration stargate port equals: port;	
 		assert: application saganConfiguration pgHostname equals: 'localhost';
 		assert: application saganConfiguration pgUsername equals: 'postgres';
 		assert: application saganConfiguration pgPassword equals:  'secret';
-		assert: application saganConfiguration pgDatabaseName equals: 'test'.
+		assert: application saganConfiguration pgDatabaseName equals: 'test';
+		assert: application configuration rabbitmq hostname equals: 'localhost';
+		assert: application configuration rabbitmq username equals: 'guest';
+		assert: application configuration rabbitmq password equals: 'guest';
+		assert: application configuration workerQueueName equals: 'worker'.
 
 	logger recordings
 		with: #( 
@@ -148,6 +160,7 @@ CurrencyAPIApplicationTest >> testActivationWithAllArguments [
 				'[WARNING] "Service Discovery Timeout ms" parameter not provided. Using default.'
 				'[WARNING] "Service Discovery Time Slot between retries in ms" parameter not provided. Using default.'
 				'[WARNING] "PG Port" parameter not provided. Using default.'
+				'[WARNING] "Time Slot between retries in ms" parameter not provided. Using default.'
 			   '[INFO] Public URL: /'
 				'[INFO] Port:'
 				'[INFO] Operations Secret: **********'
@@ -161,9 +174,19 @@ CurrencyAPIApplicationTest >> testActivationWithAllArguments [
 				'[INFO] PG Username: postgres'
 				'[INFO] PG Password: **********'
 				'[INFO] PG Database Name: test'
+				'[INFO] Worker Queue Name: worker'
+				'[INFO] Username: guest'
+				'[INFO] Password: **********'	
+				'[INFO] Hostname: localhost'
+				'[INFO] Time Slot between retries in ms: 100'
 			   '[INFO] Obtaining configuration... [DONE]'
 				'[INFO] Installing system'
 			   '[INFO] Starting up system'
+				'[INFO] Starting publisher...'
+				'[INFO] Connecting to RabbitMQ...'
+				'[INFO] Connecting to RabbitMQ... [DONE]'
+				'[INFO] Connected to RabbitMQ'
+				'[INFO] Starting publisher... [DONE]'
 				'[INFO] API Version:'
 				'[INFO] Creating API...'
 			   '[INFO] Creating API... [DONE]'

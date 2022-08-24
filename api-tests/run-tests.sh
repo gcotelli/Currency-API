@@ -2,11 +2,15 @@
 
 set -eux
 
+docker-compose up -d rabbitmq
 docker-compose up -d db
 # We need to wait for postgreSQL to finish starting up
 sleep 10
 
 docker-compose up -d --build api
+sleep 5
+
+docker-compose up -d --build exporter
 sleep 5
 
 docker run \
@@ -19,6 +23,6 @@ docker run \
   --reporters cli,junit \
   --reporter-junit-export api-test-result.xml \
   --environment docker-environment.json \
-  || docker-compose logs api
+  || docker-compose logs api exporter
 
 docker-compose down || docker-compose kill
