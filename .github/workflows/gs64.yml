@@ -1,0 +1,15 @@
+name: 'GS64 test'
+
+on: [push]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test
+        id: gstest
+        uses: ba-st-actions/gs64-ci@release-candidate
+        with:
+          project-name: 'Currency-API'
