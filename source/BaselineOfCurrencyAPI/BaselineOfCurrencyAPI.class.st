@@ -62,14 +62,6 @@ BaselineOfCurrencyAPI >> setUpDeploymentPackages: spec [
 		package: 'Currency-Model' with: [ spec requires: 'Buoy-Deployment' ];
 		group: 'Deployment' with: 'Currency-Model'.
 
-	spec
-		package: 'Currency-System-Model'
-		with: [ spec requires: #( 'PersistentAPISkeleton-PostgreSQL' 'Currency-Model' ) ];
-		group: 'Deployment' with: 'Currency-System-Model'.
-
-	spec
-		package: 'Currency-API-Model' with: [ spec requires: 'Currency-System-Model' ];
-		group: 'Deployment' with: 'Currency-API-Model'
 ]
 
 { #category : #baselines }
@@ -80,14 +72,4 @@ BaselineOfCurrencyAPI >> setUpTestPackages: spec [
 		with: [ spec requires: #( 'Buoy-SUnit' 'Chalten-Deployment' 'Currency-Model' ) ];
 		group: 'Tests' with: 'Currency-Model-Tests'.
 
-	spec
-		package: 'Currency-System-Model-Tests'
-		with: [ 
-			spec requires: #( 'Currency-System-Model' 'Currency-Model-Tests' 'PersistentAPISkeleton-SUnit' ) ];
-		group: 'Tests' with: 'Currency-System-Model-Tests'.
-
-	spec
-		package: 'Currency-API-Model-Tests'
-		with: [ spec requires: #( 'PersistentAPISkeleton-SUnit' 'Currency-API-Model' ) ];
-		group: 'Tests' with: 'Currency-API-Model-Tests'
 ]
